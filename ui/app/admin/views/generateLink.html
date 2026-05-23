@@ -1,0 +1,13 @@
+<div class="token-share-container form-field">
+    <div class="field-attribute">
+        <label for="number">Phone Number With Country Code</label>
+    </div>
+    <div class="field-value">
+        <input type="text" id="number" ng-model="phoneNumber" placeholder="Enter phone number" class="form-control"/>
+    </div>
+    <button class="btn btn-primary"
+            ng-click="generateAndShare()"
+            ng-disabled="!phoneNumber">
+        Generate & Share Link
+    </button>
+</div>

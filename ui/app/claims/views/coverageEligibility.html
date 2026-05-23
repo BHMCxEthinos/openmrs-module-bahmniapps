@@ -1,0 +1,162 @@
+<div class="claim-page">
+
+    <div class="page-header">
+        <h2>Predetermination Request</h2>
+        <p>Check estimated insurance coverage before treatment</p>
+    </div>
+
+    <div class="patient-summary">
+
+        <div class="summary-card">
+            <label>Patient</label>
+            <span>
+                {{patient.givenName}}
+                {{patient.familyName}}
+            </span>
+        </div>
+
+        <div class="summary-card">
+            <label>Patient Identifier</label>
+            <span>{{patient.identifier}}</span>
+        </div>
+
+        <div class="summary-card">
+            <label>Gender</label>
+            <span>{{patient.gender}}</span>
+        </div>
+
+    </div>
+
+    <form class="simple-form-ui">
+
+        <section class="form-section">
+
+            <h3>Insurance Information</h3>
+
+            <div class="form-grid">
+
+                <div>
+                    <label>ABHA ID</label>
+                    <input type="text"
+                           ng-model="claimRequest.abhaId"
+                           placeholder="91-XXXX-XXXX-XXXX">
+                </div>
+
+                <div>
+                    <label>Policy Number</label>
+                    <input type="text"
+                           ng-model="claimRequest.policyNumber">
+                </div>
+
+                <div>
+                    <label>Payer Code</label>
+                    <input type="text"
+                           ng-model="claimRequest.payerCode">
+                </div>
+
+                <div>
+                    <label>Payer Name</label>
+                    <input type="text"
+                           ng-model="claimRequest.payerName">
+                </div>
+
+                <div>
+                    <label>Coverage Start</label>
+                    <input type="date"
+                           ng-model="claimRequest.coveragePeriodStart">
+                </div>
+
+                <div>
+                    <label>Coverage End</label>
+                    <input type="date"
+                           ng-model="claimRequest.coveragePeriodEnd">
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="form-section">
+
+            <div class="section-title">
+                <h3>Estimated Billing Items</h3>
+
+                <button type="button"
+                        class="secondary-btn"
+                        ng-click="addBillItem()">
+                    + Add Item
+                </button>
+            </div>
+
+            <table class="table bill-table">
+
+                <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Code</th>
+                    <th>Unit Price</th>
+                    <th>Qty</th>
+                    <th>Net Amount</th>
+                    <th></th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr ng-repeat="item in claimRequest.items">
+
+                    <td>
+                        <input type="text"
+                               ng-model="item.serviceDisplay"
+                               placeholder="Room Charges">
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               ng-model="item.serviceCode"
+                               placeholder="room-charges">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               ng-model="item.unitPrice">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               ng-model="item.quantity">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               ng-model="item.net">
+                    </td>
+
+                    <td>
+                        <button type="button"
+                                class="danger-btn"
+                                ng-click="removeBillItem($index)">
+                            Remove
+                        </button>
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <div class="action-container">
+            <button type="button"
+                    class="primary-btn"
+                    ng-click="submitPredetermination()">
+
+                Submit Predetermination
+            </button>
+        </div>
+
+    </form>
+
+</div>
