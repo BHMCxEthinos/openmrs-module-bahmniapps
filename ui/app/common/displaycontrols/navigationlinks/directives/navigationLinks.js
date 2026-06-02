@@ -22,18 +22,18 @@ angular.module('bahmni.common.displaycontrol.navigationlinks')
                     "url": "../clinical/#/default/patient/{{patientUuid}}/dashboard/visit/{{visitUuid}}/?encounterUuid=active",
                     "title": "Visit"
                 },
-                {
-                    "name": "inpatient",
-                    "translationKey": "PATIENT_ADT_PAGE_KEY",
-                    "url": "../adt/#/patient/{{patientUuid}}/visit/{{visitUuid}}/",
-                    "title": "In Patient"
-                },
-                {
-                    "name": "enrolment",
-                    "translationKey": "PROGRAM_MANAGEMENT_PAGE_KEY",
-                    "url": "../clinical/#/programs/patient/{{patientUuid}}/consultationContext",
-                    "title": "Enrolment"
-                },
+                // {
+                //     "name": "inpatient",
+                //     "translationKey": "PATIENT_ADT_PAGE_KEY",
+                //     "url": "../adt/#/patient/{{patientUuid}}/visit/{{visitUuid}}/",
+                //     "title": "In Patient"
+                // },
+                // {
+                //     "name": "enrolment",
+                //     "translationKey": "PROGRAM_MANAGEMENT_PAGE_KEY",
+                //     "url": "../clinical/#/programs/patient/{{patientUuid}}/consultationContext",
+                //     "title": "Enrolment"
+                // },
                 {
                     "name": "visitAttribute",
                     "translationKey": "PATIENT_VISIT_ATTRIBUTES_PAGE_KEY",
