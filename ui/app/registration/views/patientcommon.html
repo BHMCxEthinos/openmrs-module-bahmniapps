@@ -133,6 +133,36 @@
                 <ng-include src="'views/age.html'"></ng-include>
             </div>
         </section>
+        <div ng-repeat="section in ::patientConfiguration.getOrderedPatientAttributesSections()"
+            class="additional-info-wrapper">
+            <div ng-if="section.canShow">
+                <!-- <div class="box-container form" ng-if="::(section.attributes.length > 0 && section.title)">
+                    <legend class="additional-attribute" toggle="section.expand">
+                        <span>
+                            <i class="fa fa-caret-right"></i>
+                            <i class="fa fa-caret-down"></i>
+                            <strong>
+                                <a ng-if="::section.translationKey" href accesskey="{{::section.shortcutKey | translate}}"
+                                    ng-bind-html="::section.translationKey | translate">
+                                </a>
+                                <a ng-if="::(section.title && !section.translationKey)"
+                                    href>{{::'REGISTRATION_TITLE_ADDITIONAL_PATIENT' | translate}}</a>
+                            </strong>
+                        </span>
+                    </legend> -->
+                    <div class="form" ng-if="::(section.attributes.length > 0 && section.title)">
+                    <section class="form-field-inline clearfix" ng-show="true">
+                        <article class="form-field" ng-repeat="attribute in ::section.attributes"
+                            ng-class="::{'right-form-field' : $index%2 != 0}">
+                            <attribute-types target-model="patient" attribute="::attribute" field-validation="::fieldValidation"
+                                is-auto-complete="isAutoComplete" get-auto-complete-list="getAutoCompleteList"
+                                get-data-results="getDataResults" is-read-only="isReadOnly"
+                                handle-update="handleUpdate"></attribute-types>
+                        </article>
+                    </section>
+                </div>
+            </div>
+        </div>
         <legend class="registraion_legend" ng-if="::addressLevels.length>0">
             <span class="mylegend"> {{ ::'REGISTRATION_LABEL_ADDRESS_INFO' | translate}}</span>
         </legend>
@@ -171,7 +201,7 @@
         </section>
     </div>
 
-    <div ng-repeat="section in ::patientConfiguration.getOrderedPatientAttributesSections()"
+    <!-- <div ng-repeat="section in ::patientConfiguration.getOrderedPatientAttributesSections()"
          class="additional-info-wrapper">
         <div ng-if="section.canShow">
             <div class="box-container form" ng-if="::(section.attributes.length > 0 && section.title)">
@@ -196,8 +226,8 @@
                     </article>
                 </section>
             </div>
-        </div>
-    </div>
+        </div> -->
+    <!-- </div> -->
     <div class="box-container" ng-if="::(relationshipTypes.length > 0)">
         <legend class="additional-attribute" ng-show="::relationshipTypes" toggle="patient.hasRelationships">
           <span>
