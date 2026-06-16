@@ -35,6 +35,7 @@ angular.module('bahmni.registration')
             return $http.get(patientSearchUrl, {
                 method: "GET",
                 params: {
+                    patientAttributes: "phoneNumber",
                     identifier: identifier,
                     loginLocationUuid: sessionService.getLoginLocationUuid()
                 },
@@ -47,6 +48,7 @@ angular.module('bahmni.registration')
             return $http.get(patientSearchUrl, {
                 method: "GET",
                 params: {
+                    patientAttributes: "phoneNumber",
                     identifier: query,
                     filterOnAllIdentifiers: true,
                     q: query,
