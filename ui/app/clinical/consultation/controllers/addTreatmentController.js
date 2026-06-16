@@ -983,15 +983,7 @@ angular.module('bahmni.clinical')
                 });
 
                 // Dynamically Odoo URL build करा
-                var currentHost = window.location.hostname;
-                var odooHost, odooBaseUrl;
-
-                if (currentHost === 'localhost') {
-                    odooBaseUrl = '/odoo';  // Local proxy
-                } else {
-                    odooHost = 'erp-' + currentHost;
-                    odooBaseUrl = window.location.protocol + '//' + odooHost;  // Production - direct
-                }
+                var odooBaseUrl = '/odoo';
                 $scope.odooBaseUrl = odooBaseUrl;
 
                 // Odoo authenticate करा
