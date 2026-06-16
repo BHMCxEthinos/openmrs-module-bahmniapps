@@ -2,9 +2,9 @@
 
 angular.module('bahmni.clinical')
     .controller('AddTreatmentController', ['$scope', '$rootScope', 'contextChangeHandler', 'treatmentConfig', 'drugService',
-        '$timeout', 'clinicalAppConfigService', 'ngDialog', '$window', 'messagingService', 'appService', 'activeDrugOrders',
+        '$timeout', '$http', 'clinicalAppConfigService', 'ngDialog', '$window', 'messagingService', 'appService', 'activeDrugOrders',
         'orderSetService', '$q', 'locationService', 'spinner', '$translate', '$state', 'cdssService', 'observationsService', 'diagnosisService', 'visitService',
-        function ($scope, $rootScope, contextChangeHandler, treatmentConfig, drugService, $timeout,
+        function ($scope, $rootScope, contextChangeHandler, treatmentConfig, drugService, $timeout, $http,
             clinicalAppConfigService, ngDialog, $window, messagingService, appService, activeDrugOrders,
             orderSetService, $q, locationService, spinner, $translate, $state, cdssService, observationsService, diagnosisService, visitService) {
             var DateUtil = Bahmni.Common.Util.DateUtil;
@@ -616,7 +616,44 @@ angular.module('bahmni.clinical')
                 $scope.onSelect = function (item) {
                     selectedItem = item;
                     $scope.onChange();
+
+                    if (item && item.drug && item.drug.name) {
+                        $scope.treatment.stockLoading = true;
+                        $scope.treatment.stockQuantity = undefined;
+                        $http({
+                            method: 'POST',
+                            url: '/odoo/web/dataset/call_kw',
+                            headers: {'Content-Type': 'application/json'},
+                            data: {
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                id: new Date().getTime(),
+                                params: {
+                                    model: 'stock.quant',
+                                    method: 'search_read',
+                                    args: [[
+                                        ['product_id.name', 'ilike', item.drug.name],
+                                        ['location_id.name', '=', $scope.currentLocation],
+                                        ['quantity', '>', 0]
+                                    ]],
+                                    kwargs: {
+                                        fields: ['product_id', 'quantity', 'location_id'],
+                                        limit: 10
+                                    }
+                                }
+                            }
+                        }).then(function (response) {
+                            var results = (response.data && response.data.result) || [];
+                            var total = 0;
+                            results.forEach(function (p) {
+                                if (p.quantity > 0) total += p.quantity;
+                            });
+                            $scope.treatment.stockQuantity = total;
+                            $scope.treatment.stockLoading = false;
+                        });
+                    }
                 };
+
                 $scope.onAccept = function () {
                     $scope.treatment.acceptedItem = $scope.treatment.drugNameDisplay;
                     $scope.onChange();
@@ -649,6 +686,8 @@ angular.module('bahmni.clinical')
 
             $scope.clearForm = function () {
                 $scope.treatment = newTreatment();
+                $scope.treatment.stockQuantity = undefined;
+                $scope.treatment.stockLoading = false;
                 $scope.formInvalid = false;
                 clearHighlights();
                 markVariable("startNewDrugEntry");
@@ -939,6 +978,9 @@ angular.module('bahmni.clinical')
             };
 
             var init = function () {
+                locationService.getLoggedInLocation().then(function (response) {
+                    $scope.currentLocation = response.name;
+                });
                 $scope.consultation.removableDrugs = $scope.consultation.removableDrugs || [];
                 $scope.consultation.discontinuedDrugs = $scope.consultation.discontinuedDrugs || [];
                 $scope.consultation.drugOrdersWithUpdatedOrderAttributes = $scope.consultation.drugOrdersWithUpdatedOrderAttributes || {};

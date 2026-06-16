@@ -76,6 +76,13 @@
                                    ng-model="treatment.drugNameDisplay" on-select="onSelect" autofocus
                                    ng-disabled="treatment.previousOrderUuid" ng-readonly="treatment.isBeingEdited"/>
 
+                                  <div ng-show="treatment.drug.name" style="margin-top:6px;">
+                                <span ng-show="treatment.stockLoading" style="font-size:12px; color:#666;">Stock Loading...</span>
+                                <span ng-show="!treatment.stockLoading && treatment.stockQuantity > 10" style="font-size:12px; font-weight:600; color:#155724; background:#d4edda; padding:3px 10px; border-radius:12px;">Stock: {{treatment.stockQuantity}} units</span>
+                                <span ng-show="!treatment.stockLoading && treatment.stockQuantity > 0 && treatment.stockQuantity <= 10" style="font-size:12px; font-weight:600; color:#856404; background:#fff3cd; padding:3px 10px; border-radius:12px;">Low Stock: {{treatment.stockQuantity}} units</span>
+                                <span ng-show="!treatment.stockLoading && treatment.stockQuantity === 0" style="font-size:12px; font-weight:600; color:#721c24; background:#f8d7da; padding:3px 10px; border-radius:12px;">Out of Stock</span>
+                            </div>
+
                 <span ng-if="treatmentConfig.allowNonCodedDrugs()">
                     <button type="button" ng-model="treatment.isNonCodedDrug"
                             class="fl accept-btn" id="accept-button"
