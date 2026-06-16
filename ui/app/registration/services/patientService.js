@@ -31,7 +31,8 @@ angular.module('bahmni.registration')
         };
 
         var searchByIdentifier = function (identifier) {
-            return $http.get(Bahmni.Common.Constants.bahmniCommonsSearchUrl + "/patient", {
+            var patientSearchUrl = Bahmni.Common.Constants.bahmniDistroPatientSearchWithCustomerUrl;
+            return $http.get(patientSearchUrl, {
                 method: "GET",
                 params: {
                     identifier: identifier,
@@ -42,7 +43,8 @@ angular.module('bahmni.registration')
         };
 
         var searchByNameOrIdentifier = function (query, limit) {
-            return $http.get(Bahmni.Common.Constants.bahmniCommonsSearchUrl + "/patient/lucene", {
+            var patientSearchUrl = Bahmni.Common.Constants.bahmniDistroPatientSearchWithCustomerUrl;
+            return $http.get(patientSearchUrl, {
                 method: "GET",
                 params: {
                     identifier: query,
