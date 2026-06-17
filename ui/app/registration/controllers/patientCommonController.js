@@ -24,6 +24,43 @@ angular.module('bahmni.registration')
             var identifierExtnMap = new Map();
             $scope.attributesToBeDisabled = [];
 
+            // READ-ONLY for Company Code
+            $scope.isReadOnly = function (field) {
+                if (field === 'Company Code') {
+                    return true;
+                }
+                var readOnlyFields = appService.getAppDescriptor()
+                                    .getConfigValue("readOnlyFields") || [];
+                return readOnlyFields.indexOf(field) !== -1;
+            };
+
+            $http.get('/openmrs/ws/rest/v1/session', {
+                withCredentials: true
+            }).then(function (sessionResponse) {
+                var locationUuid = sessionResponse.data &&
+                                sessionResponse.data.sessionLocation
+                                ? sessionResponse.data.sessionLocation.uuid
+                                : null;
+                if (!locationUuid) return null;
+                return $http.get('/openmrs/ws/rest/v1/location/' + locationUuid + '?v=full', {
+                    withCredentials: true
+                });
+            }).then(function (locationResponse) {
+                if (!locationResponse || !locationResponse.data) return;
+                var attributes = locationResponse.data.attributes || [];
+                for (var i = 0; i < attributes.length; i++) {
+                    if (attributes[i].attributeType &&
+                        attributes[i].attributeType.display === 'Customer Code' &&
+                        !attributes[i].voided) {
+                        $scope.patient['Company Code'] = attributes[i].value;
+                        break;
+                    }
+                }
+            }).catch(function (err) {
+                console.error('Failed to load Customer Code from location:', err);
+            });
+            // ===== END AUTO-FILL =====
+
             $scope.getExtButtons = function (identifierType) {
                 var extensionPoint = getExtensionPoint(identifierType);
                 if (extensionPoint != null && extensionPoint.extensionParams !== null && extensionPoint.extensionParams.buttons !== null) {
