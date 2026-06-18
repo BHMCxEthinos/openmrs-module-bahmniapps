@@ -14,9 +14,9 @@
             <td>District: <span class="value">{{patient.address.countyDistrict}}</span></td>
         </tr> -->
         <tr ng-switch-when="true">
-            <td colspan="3">Visit Date: <span class="value">{{(visitDate | bahmniDate) || (visitSummary.startDateTime | bahmniDate)}}</span></td>
+            <!-- <td colspan="3">Visit Date: <span class="value">{{(visitDate | bahmniDate) || (visitSummary.startDateTime | bahmniDate)}}</span></td>
         </tr>
-        <tr ng-switch-default>
+        <tr ng-switch-default> -->
             <td>Visit Date: <span class="value">{{(visitDate | bahmniDate) || (visitSummary.startDateTime | bahmniDate)}}</span></td>
 			<td>Mobile No: <span class="value">{{patient.phoneNumber.value}}</span></td>
             <td ng-if="!section.config.hideProviderName">Doctor Name:
