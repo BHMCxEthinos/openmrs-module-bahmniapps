@@ -31,9 +31,14 @@ angular.module('bahmni.common.patient')
         };
 
         this.search = function (query, offset, identifier) {
+            // Check if the query/identifier is alphabetic
+            var isQueryAlpha = query && /^[A-Za-z]+$/.test(query);
+            var isIdentifierAlpha = identifier && /^[A-Za-z]+$/.test(identifier);
             offset = offset || 0;
-            identifier = identifier || query;
+            identifier = (identifier && !isIdentifierAlpha ? identifier : (query && !isQueryAlpha ? query : undefined));
+            query = (query && isQueryAlpha ? query : undefined);
             var searchParams = {
+                patientAttributes: "phoneNumber",
                 filterOnAllIdentifiers: true,
                 q: query,
                 startIndex: offset,
@@ -45,7 +50,7 @@ angular.module('bahmni.common.patient')
                 searchParams.attributeToFilterOut = filterOutAttributeForAllSearch[0].attrName;
                 searchParams.attributeValueToFilterOut = filterOutAttributeForAllSearch[0].attrValue;
             }
-            return $http.get(Bahmni.Common.Constants.bahmniCommonsSearchUrl + "/patient/lucene", {
+            return $http.get(Bahmni.Common.Constants.bahmniDistroPatientSearchWithCustomerUrl, {
                 method: "GET",
                 params: searchParams,
                 withCredentials: true
