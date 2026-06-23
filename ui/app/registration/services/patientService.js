@@ -45,11 +45,15 @@ angular.module('bahmni.registration')
 
         var searchByNameOrIdentifier = function (query, limit) {
             var patientSearchUrl = Bahmni.Common.Constants.bahmniDistroPatientSearchWithCustomerUrl;
+            // Check if the query/identifier is alphabetic
+            var isQueryAlpha = query && /^[A-Za-z]+$/.test(query);
+            var identifier = (query && !isQueryAlpha ? query : undefined);
+            query = (query && isQueryAlpha ? query : undefined);
             return $http.get(patientSearchUrl, {
                 method: "GET",
                 params: {
                     patientAttributes: "phoneNumber",
-                    identifier: query,
+                    identifier: identifier,
                     filterOnAllIdentifiers: true,
                     q: query,
                     s: "byIdOrName",
