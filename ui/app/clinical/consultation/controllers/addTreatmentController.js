@@ -980,9 +980,9 @@ angular.module('bahmni.clinical')
             var init = function () {
                 locationService.getLoggedInLocation().then(function (response) {
                     $scope.currentLocation = response.name;
-                    $http.get('/openmrs/ws/rest/v1/location/' + response.uuid + '?v=full').then(function(locResponse) {
+                    $http.get('/openmrs/ws/rest/v1/location/' + response.uuid + '?v=full').then(function (locResponse) {
                         var attributes = locResponse.data.attributes || [];
-                        var ohcAttr = attributes.find(function(attr) {
+                        var ohcAttr = attributes.find(function (attr) {
                             return attr.attributeType && attr.attributeType.display === 'OHC ID';
                         });
                         $scope.ohcId = ohcAttr ? ohcAttr.value : null;
