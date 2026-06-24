@@ -633,7 +633,7 @@ angular.module('bahmni.clinical')
                                     method: 'search_read',
                                     args: [[
                                         ['product_id.name', 'ilike', item.drug.name],
-                                        ['location_id.name', '=', $scope.currentLocation],
+                                        ['location_id.complete_name', 'ilike', $scope.ohcId ? $scope.ohcId : $scope.currentLocation],
                                         ['quantity', '>', 0]
                                     ]],
                                     kwargs: {
@@ -980,6 +980,13 @@ angular.module('bahmni.clinical')
             var init = function () {
                 locationService.getLoggedInLocation().then(function (response) {
                     $scope.currentLocation = response.name;
+                    $http.get('/openmrs/ws/rest/v1/location/' + response.uuid + '?v=full').then(function(locResponse) {
+                        var attributes = locResponse.data.attributes || [];
+                        var ohcAttr = attributes.find(function(attr) {
+                            return attr.attributeType && attr.attributeType.display === 'OHC ID';
+                        });
+                        $scope.ohcId = ohcAttr ? ohcAttr.value : null;
+                    });
                 });
 
                 // Dynamically Odoo URL build करा
