@@ -286,22 +286,18 @@ angular.module('bahmni.registration')
                     deferred.reject("Some fields are not valid");
                     return deferred.promise;
                 } else {
-
                     var caseType = _.find($scope.attrTypes, function (attr) {
                         return attr.attrName === "Case Type";
                     });
-
                     if (caseType && (!caseType.attrValue || caseType.attrValue === "")) {
                         messagingService.showMessage("error", "Case Type is mandatory.");
                         deferred.reject("Case Type is mandatory");
                         return deferred.promise;
                     }
-
                     deferred.resolve();
                     return deferred.promise;
                 }
             };
-
             // Start :: Registration Page validation
             // To be deleted later - Hacky fix only for Registration Page
             var mandatoryConceptGroup = [];
@@ -309,7 +305,6 @@ angular.module('bahmni.registration')
                 conceptGroupValidation($scope.observations);
                 return isValid(mandatoryConceptGroup);
             };
-
             var conceptGroupValidation = function (observations) {
                 var concepts = _.filter(observations, function (observationNode) {
                     return isMandatoryConcept(observationNode);
@@ -342,7 +337,6 @@ angular.module('bahmni.registration')
                 return _.isEmpty(concept);
             };
             // End :: Registration Page validation
-
             var afterSave = function () {
                 var forwardUrl = appService.getAppDescriptor().getConfigValue("afterVisitSaveForwardUrl");
                 var dashboardUrl = appService.getAppDescriptor().getConfigValue("dashboardUrl") || Bahmni.Registration.Constants.dashboardUrl;
