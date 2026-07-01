@@ -3,7 +3,6 @@
         <div>
             <form name="myForm" ng-init="disableFormSubmitOnEnter()" class="visit-patient">
                 <div class="box-container">
-
                     <legend class="registraion_legend first-registraion_legend">
                         <span class="mylegend"><strong>{{ ::'REGISTRATION_LABEL_SUMMARY' | translate}}</strong></span>
                     </legend>
@@ -25,6 +24,24 @@
                             </div>
                         </div>
                     </section>
+                    <div class="form-field" ng-repeat="attrType in attrTypes"
+                            ng-if="attrType.attrName === 'Case Type'">
+                            <div class="field-attribute">
+                                <label class="control-label">
+                                    {{attrType.attrName}}
+                                    <span style="color:red">*</span>
+                                </label>
+                            </div>
+                            <div class="field-value">
+                                <select
+                                    ng-if="attrType.preferredHandlerClassname=='SpecifiedTextOptionsDropdownHandler'"
+                                    id="caseType" class="concept-name" ng-model="attrType.attrValue"
+                                    ng-options="h for h in attrType.handlerConfig" required>
+
+                                    <option value="">-- Select Case Type --</option>
+                                </select>
+                            </div>
+                    </div>
                     <!-- TODO: need to find a better way to render the directive again on context change or after all the calls are made.-->
                     <section class="observation-section" ng-if="context">
                         <div ng-repeat="conceptSet in ::availableConceptSets" class="concept-set-group">
@@ -46,7 +63,7 @@
                             </div>
                         </div>
                     </section>
-                    <section class="observation-section" ng-if="attrTypes">
+                    <!-- <section class="observation-section" ng-if="attrTypes">
                         <div class="registraion_legend">
                             <span class="mylegend">Visit Information</span>
                         </div>
@@ -70,7 +87,7 @@
                                 </fieldset>
                             </div>
                         </div>
-                    </section>
+                    </section> -->
                 </div>
                 <div class="submit-btn-container">
                     <button type="button" class="cancel" tabindex="-1" ng-show="::canCloseVisit" ng-click="closeVisitIfDischarged()">{{ ::'REGISTRATION_LABEL_CLOSE_VISIT' | translate}}</button>
