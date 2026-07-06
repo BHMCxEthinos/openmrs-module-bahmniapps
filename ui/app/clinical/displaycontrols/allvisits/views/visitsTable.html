@@ -19,7 +19,12 @@
                            title="Current Visit"></i>
                     </a>
                 </td>
-                <td class="value" id="visitType">{{::translateVisitTypes(visit.getVisitType())}}</td>
+                <td class="value" id="visitType" width="30%">
+                    {{::translateVisitTypes(visit.getVisitType())}}
+                </td>
+                <td class="value" id="visitLocation" width="30%" ng-if="::visit.location">
+                    {{::visit.location.display}}
+                </td>
                 <td class="value" id="visitType" ng-show="::enableIPDFeature" ng-if="::visit.isIPDVisit()">
                     <a class="visit" ng-click="openIPDDashboard(visit)">
                         {{::'VIEW_IPD_DASHBOARD'|translate}}
