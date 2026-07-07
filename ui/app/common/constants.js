@@ -315,7 +315,8 @@ Bahmni.Common = Bahmni.Common || {};
         implementationId: RESTWS_V1 + "/implementationid",
         bahmniDistroEncounterUrl: BAHMNI_CORE + "/distro/bahmniencounter",
         aiScribbleApi: hostUrl + "/bahmni-ai-service/api/scribble",
-        bahmniDistroPatientSearchWithCustomerUrl: BAHMNI_CORE + "/distro/patientSearchWithinCustomer"
+        bahmniDistroPatientSearchWithCustomerUrl: BAHMNI_CORE + "/distro/patientSearchWithinCustomer",
+        bahmniDistroUserProviderSaveUrl: BAHMNI_CORE + "/distro/userProviderCreate"
     };
 })();
 

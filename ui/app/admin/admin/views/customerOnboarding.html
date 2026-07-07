@@ -1,0 +1,589 @@
+<div class="customer-onboarding-page">
+    <style>
+        .customer-onboarding-page .onboarding-layout {
+            display: flex;
+            align-items: flex-start;
+            gap: 0;
+            min-height: calc(100vh - 120px);
+        }
+        .customer-onboarding-page .onboarding-nav {
+            position: sticky;
+            top: 0;
+            flex: 0 0 180px;
+            min-width: 180px;
+            background: #f5f5f5;
+            border-right: 1px solid #ddd;
+            padding: 12px 0;
+            align-self: flex-start;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+        .customer-onboarding-page .onboarding-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .customer-onboarding-page .onboarding-nav li {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+        .customer-onboarding-page .onboarding-nav li:hover {
+            background: #ebebeb;
+        }
+        .customer-onboarding-page .onboarding-nav li.active {
+            background: #fff;
+            border-left-color: #007896;
+            font-weight: 600;
+        }
+        .customer-onboarding-page .onboarding-nav li i {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+        .customer-onboarding-page .onboarding-main {
+            flex: 1;
+            min-width: 0;
+            padding: 16px 20px;
+        }
+        .customer-onboarding-page .panel-header {
+            margin-bottom: 12px;
+        }
+        .customer-onboarding-page .panel-header h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+        .customer-onboarding-page .toolbar-row {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+            margin-bottom: 12px;
+        }
+        .customer-onboarding-page .toolbar-row::after {
+            content: '';
+            flex: 1 1 auto;
+        }
+        .customer-onboarding-page .toolbar-row .toolbar-item {
+            flex: 0 0 auto;
+            min-width: 0;
+        }
+        .customer-onboarding-page .toolbar-row .toolbar-item:first-child {
+            flex: 0 0 38%;
+            max-width: 420px;
+        }
+        .customer-onboarding-page .toolbar-row .toolbar-item:not(:first-child) {
+            flex: 0 0 auto;
+        }
+        .customer-onboarding-page .toolbar-row input[type="text"] {
+            width: 100%;
+            padding: 4px 8px;
+            margin-right: 0;
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+        .customer-onboarding-page .toolbar-row .toolbar-item button {
+            width: auto;
+            min-width: 13.5rem;
+            white-space: nowrap;
+            box-sizing: border-box;
+            font-size: 12px;
+            padding: 4px 14px;
+            line-height: 1.3;
+        }
+        .customer-onboarding-page .toolbar-row .toolbar-item button strong {
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .customer-onboarding-page .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+        .customer-onboarding-page .data-table th,
+        .customer-onboarding-page .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .customer-onboarding-page .data-table th {
+            background: #f0f0f0;
+            font-weight: 600;
+        }
+        .customer-onboarding-page .data-table tr.active {
+            background: #e8f4f8;
+        }
+        .customer-onboarding-page .data-table tr:hover {
+            background: #f9f9f9;
+        }
+        .customer-onboarding-page .data-table .action-link {
+            cursor: pointer;
+            color: #007896;
+        }
+        .customer-onboarding-page .data-table .action-link:hover {
+            text-decoration: underline;
+        }
+        .customer-onboarding-page .edit-form-panel {
+            border-top: 2px solid #007896;
+            padding-top: 16px;
+            margin-top: 8px;
+        }
+        .customer-onboarding-page .edit-form-panel h3 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            padding-left: 24px;
+        }
+        .customer-onboarding-page .edit-form-panel .form-field .field-attribute label {
+            text-align: left;
+            padding-left: 24px;
+            margin-left: 0;
+        }
+        .customer-onboarding-page .edit-form-panel .form-field .field-value {
+            padding-left: 20px;
+        }
+        .customer-onboarding-page .edit-form-panel .btn-row {
+            clear: both;
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px 0 4px;
+        }
+        .customer-onboarding-page .edit-form-panel .btn-row button {
+            margin: 0 8px;
+        }
+        .customer-onboarding-page .form-field .field-value input[type="text"],
+        .customer-onboarding-page .form-field .field-value input[type="password"],
+        .customer-onboarding-page .form-field .field-value select {
+            width: 12.5em;
+            max-width: 12.5em;
+            box-sizing: border-box;
+            padding: 2px 10px;
+        }
+        .customer-onboarding-page .note-warning {
+            color: #856404;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .customer-onboarding-page .empty-message {
+            color: #666;
+            font-style: italic;
+            padding: 12px 0;
+        }
+        .customer-onboarding-page .form-field.role-checkbox-field .field-value {
+            max-width: none;
+            min-width: 28em;
+        }
+        .customer-onboarding-page .role-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 20px;
+            align-items: start;
+        }
+        .customer-onboarding-page .role-list label {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            margin: 0;
+            font-weight: normal;
+            line-height: 1.4;
+        }
+        .customer-onboarding-page .role-list label input[type="checkbox"] {
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        .customer-onboarding-page .role-list .note-warning {
+            grid-column: 1 / -1;
+        }
+    </style>
+
+    <div class="onboarding-layout">
+        <nav class="onboarding-nav">
+            <ul>
+                <li ng-class="{active: state.activePanel === 'customer'}" ng-click="setActivePanel('customer')">
+                    <i class="fa fa-building"></i> Customer
+                </li>
+                <li ng-class="{active: state.activePanel === 'location'}" ng-click="setActivePanel('location')">
+                    <i class="fa fa-map-marker"></i> Location
+                </li>
+                <li ng-class="{active: state.activePanel === 'user'}" ng-click="setActivePanel('user')">
+                    <i class="fa fa-users"></i> User
+                </li>
+            </ul>
+        </nav>
+
+        <div class="onboarding-main">
+            <!-- Customer panel -->
+            <div ng-show="state.activePanel === 'customer'" class="onboarding-section">
+                <div class="panel-header">
+                    <h2>Customers</h2>
+                    <div class="toolbar-row">
+                        <div class="toolbar-item">
+                            <input type="text" ng-model="state.searchText" placeholder="Search customer name" />
+                        </div>
+                        <div class="toolbar-item">
+                            <button type="button" class="secondary" ng-click="startNewCustomer()">
+                                <span class="fa fa-plus"><strong>&nbsp;Onboard Customer</strong></span>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="note-warning">A customer is saved as a base location with tag "Customer"</p>
+                </div>
+
+                <table class="data-table" ng-if="(customers | filter:filterCustomers).length > 0">
+                    <thead>
+                        <tr>
+                            <th>Edit</th>
+                            <th>Name</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Country</th>
+                            <th>Phone Number</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="customer in customers | filter:filterCustomers"
+                            ng-class="{active: state.showCustomerEditDetails && state.selectedCustomer && state.selectedCustomer.uuid === customer.uuid}">
+                            <td>
+                                <a class="action-link" ng-click="selectCustomer(customer, $event)" title="Edit Customer">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                            </td>
+                            <td>{{customer.name}}</td>
+                            <td>{{customer.cityVillage}}</td>
+                            <td>{{customer.stateProvince}}</td>
+                            <td>{{customer.country}}</td>
+                            <td>{{customer._phoneNumber}}</td>
+                            <td>{{customer._email}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="empty-message" ng-if="!(customers | filter:filterCustomers).length">No customers found.</p>
+
+                <div class="edit-form-panel" ng-if="state.showCustomerEditDetails && (state.showCreateCustomerForm || (state.selectedCustomer && state.selectedCustomer.uuid))">
+                    <h3>{{customerForm.uuid ? "Edit Customer" : "Onboard Customer"}}</h3>
+                    <form name="customerOnboardForm" ng-submit="saveCustomer()" novalidate>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Name <span class="mandatory">*</span></label></div>
+                            <div class="field-value"><input type="text" ng-model="customerForm.name" required ng-pattern="validationRegex.name" title="{{fieldValidation.name.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Description</label></div>
+                            <div class="field-value"><input type="text" ng-model="customerForm.description" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Tag</label></div>
+                            <div class="field-value"><input type="text" value="Customer" readonly /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Parent Location</label></div>
+                            <div class="field-value"><input type="text" value="None (Base Location)" readonly /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Address 1</label></div>
+                            <div class="field-value"><input type="text" ng-model="customerForm.address1" ng-pattern="validationRegex.address1" title="{{fieldValidation.address1.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Address 2</label></div>
+                            <div class="field-value"><input type="text" ng-model="customerForm.address2" ng-pattern="validationRegex.address2" title="{{fieldValidation.address2.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>City/Village</label></div>
+                            <div class="field-value"><input type="text" ng-model="customerForm.cityVillage" ng-pattern="validationRegex.cityVillage" title="{{fieldValidation.cityVillage.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>State/Province</label></div>
+                            <div class="field-value"><input type="text" ng-model="customerForm.stateProvince" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Country</label></div>
+                            <div class="field-value"><input type="text" ng-model="customerForm.country" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Postal Code</label></div>
+                            <div class="field-value"><input type="text" ng-model="customerForm.postalCode" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Phone Number</label></div>
+                            <div class="field-value"><input type="text" ng-model="customerForm.phoneNumber" ng-pattern="validationRegex.phoneNumber" title="{{fieldValidation.phoneNumber.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Email</label></div>
+                            <div class="field-value"><input type="text" ng-model="customerForm.email" ng-pattern="validationRegex.email" title="{{fieldValidation.email.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Website</label></div>
+                            <div class="field-value"><input type="text" ng-model="customerForm.website" ng-pattern="validationRegex.website" title="{{fieldValidation.website.errorMessage}}" placeholder="https://example.com" /></div>
+                        </div>
+                        <div class="btn-row">
+                            <button type="submit">Save Customer</button>
+                            <button type="button" class="secondary" ng-click="cancelCustomerEdit()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Location panel -->
+            <div ng-show="state.activePanel === 'location'" class="onboarding-section">
+                <div class="panel-header">
+                    <h2>Locations</h2>
+                    <div class="toolbar-row">
+                        <div class="toolbar-item">
+                            <input type="text" ng-model="state.locationSearchText" placeholder="Search location or customer" />
+                        </div>
+                        <div class="toolbar-item">
+                            <button type="button" class="secondary" ng-click="startNewLocationFromPanel()">
+                                <span class="fa fa-plus"><strong>&nbsp;Add Location</strong></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="data-table" ng-if="locationRows.length > 0">
+                    <thead>
+                        <tr>
+                            <th>Edit</th>
+                            <th>Customer</th>
+                            <th>Name</th>
+                            <th>City</th>
+                            <th>Login Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="row in locationRows track by row._rowId"
+                            ng-class="(state.selectedCustomer && state.selectedCustomer.uuid === row.customer.uuid && locationForm.uuid === row.location.uuid) ? 'active' : ''">
+                            <td>
+                                <a class="action-link" ng-click="editLocationRow(row, $event)" title="Edit Location">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                            </td>
+                            <td>{{row.customer.name}}</td>
+                            <td>{{row.location.name}}</td>
+                            <td>{{row.location.cityVillage}}</td>
+                            <td>{{row.location.isLoginLocation ? "Yes" : "No"}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="empty-message" ng-if="!locationRows.length">No locations found.</p>
+
+                <div class="edit-form-panel" ng-if="state.showLocationEditDetails">
+                    <h3>{{locationForm.uuid ? "Edit Location" : "Add Location"}}</h3>
+                    <form name="locationOnboardForm" ng-submit="saveLocation()" novalidate>
+                        <div class="form-field" ng-if="!locationForm.uuid">
+                            <div class="field-attribute"><label>Customer <span class="mandatory">*</span></label></div>
+                            <div class="field-value">
+                                <select ng-model="state.selectedCustomer"
+                                        ng-options="customer as customer.name for customer in customers track by customer.uuid"
+                                        ng-change="onLocationFormCustomerSelected()"
+                                        ng-required="!locationForm.uuid">
+                                    <option value="">-- Select Customer --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-field" ng-if="locationForm.uuid && state.selectedCustomer">
+                            <div class="field-attribute"><label>Customer</label></div>
+                            <div class="field-value"><input type="text" ng-value="state.selectedCustomer.name" readonly /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Name <span class="mandatory">*</span></label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.name" required ng-pattern="validationRegex.name" title="{{fieldValidation.name.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Description</label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.description" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Parent Location</label></div>
+                            <div class="field-value"><input type="text" ng-value="state.selectedCustomer.name" readonly ng-if="state.selectedCustomer" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Address 1</label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.address1" ng-pattern="validationRegex.address1" title="{{fieldValidation.address1.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Address 2</label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.address2" ng-pattern="validationRegex.address2" title="{{fieldValidation.address2.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>City/Village</label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.cityVillage" ng-pattern="validationRegex.cityVillage" title="{{fieldValidation.cityVillage.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>State/Province</label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.stateProvince" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Country</label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.country" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Postal Code</label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.postalCode" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Phone Number</label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.phoneNumber" ng-pattern="validationRegex.phoneNumber" title="{{fieldValidation.phoneNumber.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Email</label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.email" ng-pattern="validationRegex.email" title="{{fieldValidation.email.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Website</label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.website" ng-pattern="validationRegex.website" title="{{fieldValidation.website.errorMessage}}" placeholder="https://example.com" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>ABDM HFR ID</label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.abdmHfrId" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>ABDM HFR Name</label></div>
+                            <div class="field-value"><input type="text" ng-model="locationForm.abdmHfrName" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Login Location</label></div>
+                            <div class="field-value checkbox-value"><input type="checkbox" ng-model="locationForm.isLoginLocation" /></div>
+                        </div>
+                        <div class="btn-row">
+                            <button type="submit">Save Location</button>
+                            <button type="button" class="secondary" ng-click="cancelLocationEdit()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- User panel -->
+            <div ng-show="state.activePanel === 'user'" class="onboarding-section">
+                <div class="panel-header">
+                    <h2>Users</h2>
+                    <div class="toolbar-row">
+                        <div class="toolbar-item">
+                            <input type="text" ng-model="state.userSearchText" placeholder="Search user name" />
+                        </div>
+                        <div class="toolbar-item">
+                            <button type="button" class="secondary" ng-click="searchUsers()">Search Users</button>
+                        </div>
+                        <div class="toolbar-item">
+                            <button type="button" class="secondary" ng-click="startNewUser()">
+                                <span><i class="fa fa-user-plus"></i><strong>&nbsp;Onboard User</strong></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="data-table" ng-if="users.length > 0">
+                    <thead>
+                        <tr>
+                            <th>Edit</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Display Name</th>
+                            <th>Roles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="user in users"
+                            ng-class="{active: state.selectedUser && state.selectedUser.uuid === user.uuid}">
+                            <td>
+                                <a class="action-link" ng-click="selectUser(user)" title="Edit User">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                            </td>
+                            <td>{{user.username}}</td>
+                            <td>{{user.email}}</td>
+                            <td>{{user.display || (user.person && user.person.display)}}</td>
+                            <td>
+                                <span ng-repeat="role in user.roles">{{role.display || role.name}}{{$last ? '' : ', '}}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="empty-message" ng-if="!users.length">Search for users or create a new user.</p>
+
+                <div class="edit-form-panel" ng-if="state.showNewUserForm || (state.selectedUser && state.selectedUser.uuid)">
+                    <h3>{{state.selectedUser && state.selectedUser.uuid ? "Edit User" : "Onboard User"}}</h3>
+                    <form ng-submit="saveUser()">
+                        <div class="form-field" ng-if="!state.selectedCustomer || !state.selectedCustomer.uuid">
+                            <div class="field-attribute"><label>Customer</label></div>
+                            <div class="field-value">
+                                <select ng-model="state.selectedCustomer"
+                                        ng-options="customer as customer.name for customer in customers track by customer.uuid"
+                                        ng-change="onNewUserCustomerSelected()">
+                                    <option value="">-- Select Customer --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-field" ng-if="state.selectedCustomer && state.selectedCustomer.uuid">
+                            <div class="field-attribute"><label>Customer</label></div>
+                            <div class="field-value"><input type="text" ng-value="state.selectedCustomer.name" readonly /></div>
+                        </div>
+                        <div class="form-field role-checkbox-field" ng-if="(state.selectedCustomer && state.selectedCustomer.uuid) || (state.selectedUser && state.selectedUser.uuid)">
+                            <div class="field-attribute"><label>Login Locations</label></div>
+                            <div class="field-value role-list">
+                                <label ng-repeat="loc in getCustomerLoginLocations()">
+                                    <input type="checkbox" ng-checked="isLoginLocationSelected(loc.uuid)" ng-click="toggleLoginLocation(loc.uuid)" />
+                                    {{loc.name}}
+                                </label>
+                                <span class="note-warning" ng-if="!getCustomerLoginLocations().length">
+                                    No login locations configured for this customer.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Username <span class="mandatory">*</span></label></div>
+                            <div class="field-value"><input type="text" ng-model="newUserForm.username" required /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Email <span class="mandatory">*</span></label></div>
+                            <div class="field-value"><input type="email" ng-model="newUserForm.email" required /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>First Name <span class="mandatory">*</span></label></div>
+                            <div class="field-value"><input type="text" ng-model="newUserForm.givenName" required pattern="{{fieldValidation.givenName.pattern}}" title="{{fieldValidation.givenName.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Last Name <span class="mandatory">*</span></label></div>
+                            <div class="field-value"><input type="text" ng-model="newUserForm.familyName" required pattern="{{fieldValidation.familyName.pattern}}" title="{{fieldValidation.familyName.errorMessage}}" /></div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Gender <span class="mandatory">*</span></label></div>
+                            <div class="field-value">
+                                <select ng-model="newUserForm.gender" required>
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                    <option value="O">Other</option>
+                                    <option value="U">Unknown</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Password <span class="mandatory" ng-if="!(state.selectedUser && state.selectedUser.uuid)">*</span></label></div>
+                            <div class="field-value">
+                                <input type="password" ng-model="newUserForm.password" ng-required="!(state.selectedUser && state.selectedUser.uuid)" placeholder="{{(state.selectedUser && state.selectedUser.uuid) ? 'Leave blank to keep unchanged' : ''}}" title="Password should be 8 characters long and should have both upper and lower case characters , at least one digit , at least one non digit" />
+                                <p class="note-warning" ng-if="!(state.selectedUser && state.selectedUser.uuid)">Password should be 8 characters long and should have both upper and lower case characters , at least one digit , at least one non digit</p>
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <div class="field-attribute"><label>Confirm Password <span class="mandatory" ng-if="!(state.selectedUser && state.selectedUser.uuid)">*</span></label></div>
+                            <div class="field-value"><input type="password" ng-model="newUserForm.confirmPassword" ng-required="!(state.selectedUser && state.selectedUser.uuid)" placeholder="{{(state.selectedUser && state.selectedUser.uuid) ? 'Leave blank to keep unchanged' : ''}}" /></div>
+                        </div>
+                        <div class="form-field role-checkbox-field">
+                            <div class="field-attribute"><label>Roles</label></div>
+                            <div class="field-value role-list">
+                                <label ng-repeat="role in roles">
+                                    <input type="checkbox" ng-checked="isRoleSelected(role.uuid)" ng-click="toggleRole(role.uuid)" />
+                                    {{role.display || role.name}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="btn-row">
+                            <button type="submit">{{state.selectedUser && state.selectedUser.uuid ? "Save User" : "Create User"}}</button>
+                            <button type="button" class="secondary" ng-click="cancelNewUser()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
