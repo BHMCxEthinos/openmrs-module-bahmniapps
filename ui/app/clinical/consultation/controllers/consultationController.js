@@ -617,7 +617,7 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                         encounterTypeUuid: configurations.encounterConfig().getConsultationEncounterTypeUuid()
                     },
                     preCloseCallback: function (value) {
-                        if (confirm('Are you sure you want to close?')) {
+                        if (confirm('Are you sure you want to save?')) {
                             return true;
                         }
                         return false;

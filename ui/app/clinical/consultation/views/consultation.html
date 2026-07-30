@@ -172,7 +172,7 @@
         <section class="block observation section-grid" ng-show="groupedObservations.length > 0">
             <h2 class="section-title">{{ 'CONSULTATION_TAB_OBSERVATIONS_HEADER_LABEL'|translate }}</h2>
 
-            <div ng-repeat="observationGroup in groupedObservations">
+            <div ng-repeat="observationGroup in groupedObservations" ng-if="observationGroup.conceptSetName != 'Hand Note'">
                 <table>
                     <thead>
                     <tr class="headerRow">
