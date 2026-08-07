@@ -106,6 +106,7 @@ angular.module('bahmni.clinical')
                 return (appService.getAppDescriptor() &&
                     appService.getAppDescriptor().getConfigValue('enableFhirLabResults')) || false;
             };
+
             var getLabOrderCategoryUuid = function () {
                 var labOrderTypeName = Bahmni.Clinical.Constants.labOrderType;
                 var categoryUuid = orderTypeService.getOrderTypeUuid(labOrderTypeName);
