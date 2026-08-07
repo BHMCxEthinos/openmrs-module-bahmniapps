@@ -49,12 +49,18 @@ describe("labOrderResultService", function() {
         });
 
         $bahmniCookieStore = jasmine.createSpyObj('$bahmniCookieStore', ['get']);
-
+        var diagnosticReportService = jasmine.createSpyObj('diagnosticReportService', [
+            'getServiceRequests', 'getDiagnosticReports', 'getDiagnosticReportBundle'
+        ]);
+        var orderTypeService = jasmine.createSpyObj('orderTypeService', ['getOrderTypeUuid']);
+        orderTypeService.getOrderTypeUuid.and.returnValue('lab-order-type-uuid');
         $provide.value('$http', mockHttp);
         $provide.value('$q', Q);
         $provide.value('configurationService', configurationService);
         $provide.value('appService', appService);
         $provide.value('$bahmniCookieStore', $bahmniCookieStore);
+        $provide.value('diagnosticReportService', diagnosticReportService);
+        $provide.value('orderTypeService', orderTypeService);
     }));
 
     beforeEach(inject(['labOrderResultService', function (LabOrderResultServiceInjected) {
