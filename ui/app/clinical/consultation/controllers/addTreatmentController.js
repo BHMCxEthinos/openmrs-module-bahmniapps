@@ -989,7 +989,6 @@ angular.module('bahmni.clinical')
                     });
                 });
 
-                
                 var odooBaseUrl = '/odoo';
                 $scope.odooBaseUrl = odooBaseUrl;
 
