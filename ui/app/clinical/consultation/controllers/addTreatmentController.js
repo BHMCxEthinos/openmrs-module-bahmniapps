@@ -993,26 +993,30 @@ angular.module('bahmni.clinical')
                 var odooBaseUrl = '/odoo';
                 $scope.odooBaseUrl = odooBaseUrl;
 
-                // Odoo authenticate करा
-                $http({
-                    method: 'POST',
-                    url: odooBaseUrl + '/web/session/authenticate',
-                    headers: {'Content-Type': 'application/json'},
-                    withCredentials: true,
-                    data: {
-                        jsonrpc: '2.0',
-                        method: 'call',
-                        id: 1,
-                        params: {
-                            db: 'odoo',
-                            login: 'emrsync',
-                            password: 'Admin123'
-                        }
-                    }
-                }).then(function (response) {
-                    if (response.data && response.data.result && response.data.result.uid) {
-                        $scope.odooSessionReady = true;
-                    }
+                
+                $http.get('/openmrs/ws/rest/v1/systemsetting/erp.username?v=full').then(function (u) {
+                    $http.get('/openmrs/ws/rest/v1/systemsetting/erp.password?v=full').then(function (p) {
+                        $http({
+                            method: 'POST',
+                            url: odooBaseUrl + '/web/session/authenticate',
+                            headers: {'Content-Type': 'application/json'},
+                            withCredentials: true,
+                            data: {
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                id: 1,
+                                params: {
+                                    db: 'odoo',
+                                    login: u.data.value,
+                                    password: p.data.value
+                                }
+                            }
+                        }).then(function (response) {
+                            if (response.data && response.data.result && response.data.result.uid) {
+                                $scope.odooSessionReady = true;
+                            }
+                        });
+                    });
                 });
                 $scope.consultation.removableDrugs = $scope.consultation.removableDrugs || [];
                 $scope.consultation.discontinuedDrugs = $scope.consultation.discontinuedDrugs || [];
