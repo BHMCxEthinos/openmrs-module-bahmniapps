@@ -989,11 +989,10 @@ angular.module('bahmni.clinical')
                     });
                 });
 
-                // Dynamically Odoo URL build करा
+                
                 var odooBaseUrl = '/odoo';
                 $scope.odooBaseUrl = odooBaseUrl;
 
-                
                 $http.get('/openmrs/ws/rest/v1/systemsetting/erp.username?v=full').then(function (u) {
                     $http.get('/openmrs/ws/rest/v1/systemsetting/erp.password?v=full').then(function (p) {
                         $http({
