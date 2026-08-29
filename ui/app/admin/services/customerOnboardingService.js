@@ -127,13 +127,20 @@ angular.module('bahmni.admin')
         };
 
         this.getCustomers = function (customerTagNameToFilter) {
-            return getAllLocations().then(function (locations) {
+            return $http.get(Bahmni.Common.Constants.locationUrl, {
+                params: {
+                    v: locationRepresentation,
+                    limit: 1000
+                }
+            }).then(function (response) {
+                var locations = response.data.results || [];
                 return _.filter(locations, function (location) {
-                    var hasCustomerTag = _.some(location.tags || [], function (tag) {
-                        return tag.name === customerTagNameToFilter;
+                    var tagNames = _.map(location.tags || [], function (tag) {
+                        return (tag.name || "").toLowerCase();
                     });
-                    // Customer must be a base/root location (no parent).
-                    return hasCustomerTag && !location.parentLocation;
+                    var hasCustomerTag = _.includes(tagNames, (customerTagNameToFilter || "").toLowerCase());
+                    var isVisitLocation = _.includes(tagNames, "visit location");
+                    return hasCustomerTag && !isVisitLocation;
                 });
             });
         };
