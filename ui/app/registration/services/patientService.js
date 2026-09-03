@@ -43,7 +43,7 @@ angular.module('bahmni.registration')
             });
         };
 
-         var searchByNameOrIdentifier = function (query, limit) {
+        var searchByNameOrIdentifier = function (query, limit) {
             return $http.get(Bahmni.Common.Constants.bahmniCommonsSearchUrl + "/patient/lucene", {
                 method: "GET",
                 params: {
@@ -56,7 +56,7 @@ angular.module('bahmni.registration')
                 },
                 withCredentials: true
             }).then(function (response) {
-
+                
                 var patients = response.data.pageOfResults || [];
 
                 var requests = patients.map(function (patient) {
@@ -111,8 +111,7 @@ angular.module('bahmni.registration')
                     var selfPatients = updatedPatients.filter(function (patient) {
                         return patient.patientType &&
                             (
-                                patient.patientType.display === "Self" ||
-                                patient.patientType === "Self"
+                                patient.patientType.display === "Self" || patient.patientType === "Self"
                             );
                     });
 
@@ -123,7 +122,6 @@ angular.module('bahmni.registration')
                 });
             });
         };
-
 
         var get = function (uuid) {
             return patientServiceStrategy.get(uuid);

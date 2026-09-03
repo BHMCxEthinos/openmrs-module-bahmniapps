@@ -234,7 +234,7 @@ angular.module('bahmni.registration')
                 }
 
                 return response.data.pageOfResults.map(function (patient) {
-
+                    
                     var displayValue = getName(patient);
 
                     if (patient.employeeId) {
