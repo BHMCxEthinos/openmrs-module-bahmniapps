@@ -56,11 +56,9 @@ angular.module('bahmni.registration')
                 },
                 withCredentials: true
             }).then(function (response) {
-                
                 var patients = response.data.pageOfResults || [];
 
                 var requests = patients.map(function (patient) {
-
                     return $http.get(
                         Bahmni.Registration.Constants.basePatientUrl + patient.uuid,
                         {
@@ -71,7 +69,6 @@ angular.module('bahmni.registration')
                             withCredentials: true
                         }
                     ).then(function (patientResponse) {
-
                         var fullPatient = patientResponse.data;
 
                         var attributes = [];
@@ -98,16 +95,16 @@ angular.module('bahmni.registration')
 
                         return patient;
 
-                    }, function () {
+                   }, 
+                   function () {
 
                         patient.employeeId = null;
                         return patient;
 
-                    });
+                   });
                 });
 
                 return $q.all(requests).then(function (updatedPatients) {
-
                     var selfPatients = updatedPatients.filter(function (patient) {
                         return patient.patientType &&
                             (

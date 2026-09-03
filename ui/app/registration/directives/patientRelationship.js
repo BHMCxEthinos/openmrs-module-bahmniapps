@@ -204,7 +204,6 @@ angular.module('bahmni.registration')
 
             $scope.patientSelected = function (relationship) {
                 return function (patientData) {
-
                     console.log("SELECTED PATIENT:", patientData);
                     console.log("SELECTED PATIENT EMPLOYEE ID:", patientData.employeeId);
 
@@ -234,7 +233,6 @@ angular.module('bahmni.registration')
                 }
 
                 return response.data.pageOfResults.map(function (patient) {
-                    
                     var displayValue = getName(patient);
 
                     if (patient.employeeId) {
