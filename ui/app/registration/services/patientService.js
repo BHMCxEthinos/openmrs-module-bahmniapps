@@ -94,11 +94,10 @@ angular.module('bahmni.registration')
                             patientTypeAttribute.value : null;
 
                         return patient;
-
-                    },function () {
+                    }, function () {
                         patient.employeeId = null;
                         return patient;
-                    });});
+                    }); });
 
                 return $q.all(requests).then(function (updatedPatients) {
                     var selfPatients = updatedPatients.filter(function (patient) {
