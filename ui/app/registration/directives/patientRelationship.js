@@ -204,8 +204,27 @@ angular.module('bahmni.registration')
 
             $scope.patientSelected = function (relationship) {
                 return function (patientData) {
+
+                    console.log("SELECTED PATIENT:", patientData);
+                    console.log("SELECTED PATIENT EMPLOYEE ID:", patientData.employeeId);
+
+                    // Set relationship patient
                     relationship.patientIdentifier = patientData.identifier;
-                    relationship.personB = getPersonB(patientData.value, patientData.uuid);
+
+                    relationship.personB = {
+                        display: patientData.value,
+                        uuid: patientData.uuid
+                    };
+
+                    // Copy Employee ID from selected Self patient
+                    if (patientData.employeeId) {
+                        $scope.patient["Employee ID"] = patientData.employeeId;
+                    }
+
+                    console.log(
+                        "CURRENT PATIENT EMPLOYEE ID:",
+                        $scope.patient["Employee ID"]
+                    );
                 };
             };
 
@@ -213,15 +232,26 @@ angular.module('bahmni.registration')
                 if (angular.isUndefined(response)) {
                     return;
                 }
+
                 return response.data.pageOfResults.map(function (patient) {
+
+                    var displayValue = getName(patient);
+
+                    if (patient.employeeId) {
+                        displayValue += " - " + patient.employeeId;
+                    }
+
+                    displayValue += " - (" + patient.identifier + ")";
+
                     return {
-                        value: getName(patient) + " - " + patient.identifier,
+                        label: displayValue,
+                        value: displayValue,
                         uuid: patient.uuid,
-                        identifier: patient.identifier
+                        identifier: patient.identifier,
+                        employeeId: patient.employeeId
                     };
                 });
             };
-
             $scope.getProviderDataResults = function (data) {
                 return data.data.results.filter(function (provider) {
                     return provider.person;

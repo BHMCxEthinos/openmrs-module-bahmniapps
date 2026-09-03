@@ -43,17 +43,11 @@ angular.module('bahmni.registration')
             });
         };
 
-        var searchByNameOrIdentifier = function (query, limit) {
-            var patientSearchUrl = Bahmni.Common.Constants.bahmniDistroPatientSearchWithCustomerUrl;
-            // Check if the query/identifier is alphabetic
-            var isQueryAlpha = query && /^[A-Za-z]+$/.test(query);
-            var identifier = (query && !isQueryAlpha ? query : undefined);
-            query = (query && isQueryAlpha ? query : undefined);
-            return $http.get(patientSearchUrl, {
+         var searchByNameOrIdentifier = function (query, limit) {
+            return $http.get(Bahmni.Common.Constants.bahmniCommonsSearchUrl + "/patient/lucene", {
                 method: "GET",
                 params: {
-                    patientAttributes: "phoneNumber",
-                    identifier: identifier,
+                    identifier: query,
                     filterOnAllIdentifiers: true,
                     q: query,
                     s: "byIdOrName",
@@ -61,8 +55,75 @@ angular.module('bahmni.registration')
                     loginLocationUuid: sessionService.getLoginLocationUuid()
                 },
                 withCredentials: true
+            }).then(function (response) {
+
+                var patients = response.data.pageOfResults || [];
+
+                var requests = patients.map(function (patient) {
+
+                    return $http.get(
+                        Bahmni.Registration.Constants.basePatientUrl + patient.uuid,
+                        {
+                            method: "GET",
+                            params: {
+                                v: "full"
+                            },
+                            withCredentials: true
+                        }
+                    ).then(function (patientResponse) {
+
+                        var fullPatient = patientResponse.data;
+
+                        var attributes = [];
+
+                        if (fullPatient.person && fullPatient.person.attributes) {
+                            attributes = fullPatient.person.attributes;
+                        }
+
+                        var employeeIdAttribute = _.find(attributes, function (attribute) {
+                            return attribute.attributeType &&
+                                attribute.attributeType.display === "Employee ID";
+                        });
+
+                        var patientTypeAttribute = _.find(attributes, function (attribute) {
+                            return attribute.attributeType &&
+                                attribute.attributeType.display === "Patient Type";
+                        });
+
+                        patient.employeeId = employeeIdAttribute ?
+                            employeeIdAttribute.value : null;
+
+                        patient.patientType = patientTypeAttribute ?
+                            patientTypeAttribute.value : null;
+
+                        return patient;
+
+                    }, function () {
+
+                        patient.employeeId = null;
+                        return patient;
+
+                    });
+                });
+
+                return $q.all(requests).then(function (updatedPatients) {
+
+                    var selfPatients = updatedPatients.filter(function (patient) {
+                        return patient.patientType &&
+                            (
+                                patient.patientType.display === "Self" ||
+                                patient.patientType === "Self"
+                            );
+                    });
+
+                    response.data.pageOfResults = selfPatients;
+                    response.data.totalCount = selfPatients.length;
+
+                    return response;
+                });
             });
         };
+
 
         var get = function (uuid) {
             return patientServiceStrategy.get(uuid);
