@@ -271,16 +271,12 @@ angular.module('bahmni.registration')
 
                 return spinner.forPromise(
                     validateUniquePersonAttribute().then(function (errorText) {
-
                         if (errorText && errorText.length > 0) {
                             errorMessages.push(errorText);
                         }
-
                     })
                 ).then(function () {
-
                     if (errorMessages.length > 0) {
-
                         errorMessages.forEach(function (errorMessage) {
                             messagingService.showMessage(
                                 'error',
@@ -294,9 +290,7 @@ angular.module('bahmni.registration')
                     return spinner.forPromise(
                         createPromise()
                     ).then(function (response) {
-
                         if (errorMessage) {
-
                             messagingService.showMessage(
                                 "error",
                                 errorMessage
