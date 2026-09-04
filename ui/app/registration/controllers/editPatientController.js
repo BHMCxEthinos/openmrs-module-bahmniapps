@@ -72,7 +72,27 @@ angular.module('bahmni.registration')
 
             $scope.update = function () {
                 addNewRelationships();
-                var errorMessages = Bahmni.Common.Util.ValidationUtil.validate($scope.patient, $scope.patientConfiguration.attributeTypes);
+
+                var errorMessages = Bahmni.Common.Util.ValidationUtil.validate(
+                    $scope.patient,
+                    $scope.patientConfiguration.attributeTypes
+                );
+
+                var patientType = $scope.patient["Patient Type"];
+                var joiningDate = $scope.patient["Joining Date"];
+
+                if (patientType && patientType.value) {
+                    patientType = patientType.value;
+                }
+
+                if (patientType && patientType.display) {
+                    patientType = patientType.display;
+                }
+
+                if (patientType === "Self" && !joiningDate) {
+                    errorMessages.push("Joining Date is mandatory for Self patient type.");
+                }
+
                 if (errorMessages.length > 0) {
                     errorMessages.forEach(function (errorMessage) {
                         messagingService.showMessage('error', errorMessage);
@@ -80,13 +100,15 @@ angular.module('bahmni.registration')
                     return $q.when({});
                 }
 
-                return spinner.forPromise(patientService.update($scope.patient, $scope.openMRSPatient).then(function (result) {
-                    var patientProfileData = result.data;
-                    if (!patientProfileData.error) {
-                        successCallBack(patientProfileData);
-                        $scope.actions.followUpAction(patientProfileData);
-                    }
-                }));
+                return spinner.forPromise(
+                    patientService.update($scope.patient, $scope.openMRSPatient).then(function (result) {
+                        var patientProfileData = result.data;
+                        if (!patientProfileData.error) {
+                            successCallBack(patientProfileData);
+                            $scope.actions.followUpAction(patientProfileData);
+                        }
+                    })
+                );
             };
 
             var addNewRelationships = function () {

@@ -9,6 +9,11 @@
         <div class="field-value">
             <input type="text"
                    id="{{::addressLevel.addressField}}"
+                   placeholder="{{
+                       (addressLevel.name == 'District' || addressLevel.name == 'State')
+                       ? 'Type first 3 letters to search'
+                       : ''
+                   }}"
                    pattern-validate
                    non-blank="::addressLevel.required"
                    ng-model="address[addressLevel.addressField]"

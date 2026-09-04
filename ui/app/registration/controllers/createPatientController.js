@@ -250,21 +250,58 @@ angular.module('bahmni.registration')
 
             $scope.create = function () {
                 addNewRelationships();
-                var errorMessages = Bahmni.Common.Util.ValidationUtil.validate($scope.patient, $scope.patientConfiguration.attributeTypes);
-                return spinner.forPromise(validateUniquePersonAttribute().then(function (errorText) {
-                    if (errorText && errorText.length > 0) {
-                        errorMessages.push(errorText);
-                    }
-                })).then(function () {
+
+                var errorMessages = Bahmni.Common.Util.ValidationUtil.validate(
+                    $scope.patient,
+                    $scope.patientConfiguration.attributeTypes
+                );
+
+                var patientType = $scope.patient["Patient Type"];
+                var joiningDate = $scope.patient["Joining Date"];
+
+                if (patientType && patientType.value) {
+                    patientType = patientType.value;
+                }
+                if (patientType && patientType.display) {
+                    patientType = patientType.display;
+                }
+                if (patientType === "Self" && !joiningDate) {
+                    errorMessages.push("Joining Date is mandatory for Self patient type.");
+                }
+
+                return spinner.forPromise(
+                    validateUniquePersonAttribute().then(function (errorText) {
+
+                        if (errorText && errorText.length > 0) {
+                            errorMessages.push(errorText);
+                        }
+
+                    })
+                ).then(function () {
+
                     if (errorMessages.length > 0) {
+
                         errorMessages.forEach(function (errorMessage) {
-                            messagingService.showMessage('error', errorMessage);
+                            messagingService.showMessage(
+                                'error',
+                                errorMessage
+                            );
                         });
+
                         return $q.when({});
                     }
-                    return spinner.forPromise(createPromise()).then(function (response) {
+
+                    return spinner.forPromise(
+                        createPromise()
+                    ).then(function (response) {
+
                         if (errorMessage) {
-                            messagingService.showMessage("error", errorMessage);
+
+                            messagingService.showMessage(
+                                "error",
+                                errorMessage
+                            );
+
                             errorMessage = undefined;
                         }
                     });
