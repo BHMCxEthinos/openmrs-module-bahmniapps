@@ -258,6 +258,7 @@ angular.module('bahmni.registration')
 
                 var patientType = $scope.patient["Patient Type"];
                 var joiningDate = $scope.patient["Joining Date"];
+                var relationshipAttr = $scope.patient["Relationship"];
 
                 if (patientType && patientType.value) {
                     patientType = patientType.value;
@@ -265,8 +266,20 @@ angular.module('bahmni.registration')
                 if (patientType && patientType.display) {
                     patientType = patientType.display;
                 }
+                // Rule 1: Mandatory Joining Date for Self
                 if (patientType === "Self" && !joiningDate) {
                     errorMessages.push("Joining Date is mandatory for Self patient type.");
+                }
+                                // Rule 2: Mandatory Relationship for Dependant
+                if (patientType === "Dependant" || patientType === "Dependent") {
+                    var hasAttributeValue = relationshipAttr && (
+                        (typeof relationshipAttr === 'object' ? (relationshipAttr.value || relationshipAttr.display) : relationshipAttr)
+                    );
+                    var hasAddedRelationship = $scope.patient.relationships && $scope.patient.relationships.length > 0;
+
+                    if (!hasAttributeValue && !hasAddedRelationship) {
+                        errorMessages.push("Relationship is mandatory for Dependant patient type.");
+                    }
                 }
 
                 return spinner.forPromise(

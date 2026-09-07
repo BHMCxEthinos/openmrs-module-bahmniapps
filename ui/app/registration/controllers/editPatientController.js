@@ -70,6 +70,39 @@ angular.module('bahmni.registration')
                 spinner.forPromise($q.all([getPatientPromise, isDigitized, identifiers]));
             })();
 
+            var validateDependentRelationship = function () {
+                var patientTypeAttr = $scope.patient["patientType"] || $scope.patient["Patient Type"];
+                var patientTypeValue = "";
+
+                if (patientTypeAttr) {
+                    if (typeof patientTypeAttr === 'object') {
+                        patientTypeValue = patientTypeAttr.value || patientTypeAttr.display || patientTypeAttr.fullySpecifiedName || "";
+                    } else {
+                        patientTypeValue = patientTypeAttr.toString();
+                    }
+                }
+
+                var isDependant = patientTypeValue.toLowerCase().trim() === "dependant" || patientTypeValue.toLowerCase().trim() === "dependent";
+
+                if (isDependant) {
+                    // Check active existing relationships (not voided)
+                    var existingRelationships = _.filter($scope.patient.relationships || [], function (rel) {
+                        return !rel.voided;
+                    });
+
+                    // Check newly added relationships
+                    var newlyAdded = _.filter($scope.patient.newlyAddedRelationships || [], function (rel) {
+                        return rel.relationshipType && rel.relationshipType.uuid && (rel.personB || rel.patientIdentifier || rel.providerName);
+                    });
+
+                    if (existingRelationships.length === 0 && newlyAdded.length === 0) {
+                        return "Relationship is mandatory when Patient Type is set to Dependant.";
+                    }
+                }
+
+                return "";
+            };
+
             $scope.update = function () {
                 addNewRelationships();
 
@@ -92,6 +125,12 @@ angular.module('bahmni.registration')
                 if (patientType === "Self" && !joiningDate) {
                     errorMessages.push("Joining Date is mandatory for Self patient type.");
                 }
+
+                var relationshipError = validateDependentRelationship();
+                if (relationshipError) {
+                    errorMessages.push(relationshipError);
+                }
+
 
                 if (errorMessages.length > 0) {
                     errorMessages.forEach(function (errorMessage) {

@@ -3,6 +3,13 @@
         <div>
             <form name="myForm" ng-init="disableFormSubmitOnEnter()" class="visit-patient">
                 <div class="box-container">
+                    
+<!-- Centered Active Visit Banner with Larger Font -->
+                    <div style="text-align: center; margin: 20px 0; width: 100%; font-size: 22px; font-weight: bold;"
+                        ng-if="activeVisitType">
+                        <!-- <span style="color: #333333;">Active Visit: </span> -->
+                        <span style="color: #0056b3; font-weight: bold;">{{activeVisitType}} Visit</span>
+                    </div>
                     <legend class="registraion_legend first-registraion_legend">
                         <span class="mylegend"><strong>{{ ::'REGISTRATION_LABEL_SUMMARY' | translate}}</strong></span>
                     </legend>

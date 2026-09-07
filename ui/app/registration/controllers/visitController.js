@@ -204,7 +204,9 @@ angular.module('bahmni.registration')
 
             var searchActiveVisitsPromise = function () {
                 return visitService.search({
-                    patient: patientUuid, includeInactive: false, v: "custom:(uuid,location:(uuid))"
+                    patient: patientUuid,
+                    includeInactive: false,
+                    v: "custom:(uuid,visitType:(uuid,name,display),location:(uuid))" // Included visitType in REST representation
                 }).then(function (response) {
                     var results = response.data.results;
                     var activeVisitForCurrentLoginLocation;
@@ -215,7 +217,19 @@ angular.module('bahmni.registration')
                     }
 
                     var hasActiveVisit = activeVisitForCurrentLoginLocation.length > 0;
-                    vm.visitUuid = hasActiveVisit ? activeVisitForCurrentLoginLocation[0].uuid : "";
+                    if (hasActiveVisit) {
+                        var activeVisit = activeVisitForCurrentLoginLocation[0];
+                        vm.visitUuid = activeVisit.uuid;
+
+                        // Set activeVisitType dynamically from the active visit object
+                        if (activeVisit.visitType) {
+                            $scope.activeVisitType = activeVisit.visitType.display || activeVisit.visitType.name;
+                        }
+                    } else {
+                        vm.visitUuid = "";
+                        $scope.activeVisitType = null;
+                    }
+
                     $scope.canCloseVisit = isUserPrivilegedToCloseVisit() && hasActiveVisit;
                 });
             };
