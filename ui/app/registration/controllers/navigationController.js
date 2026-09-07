@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('bahmni.registration')
-    .controller('NavigationController', ['$scope', '$rootScope', '$location', 'sessionService', 'locationService', '$window', 'appService', '$sce', '$bahmniCookieStore'
+    .controller('NavigationController', ['$scope', '$rootScope', '$location', 'sessionService', 'locationService', '$window', 'appService', '$sce', '$bahmniCookieStore',
         function ($scope, $rootScope, $location, sessionService, locationService, $window, appService, $sce, $bahmniCookieStore) {
             $scope.extensions = appService.getAppDescriptor().getExtensions("org.bahmni.registration.navigation", "link");
             var checkCurrentPath = function () {
