@@ -5,9 +5,9 @@ angular.module('bahmni.registration')
         function ($scope, $rootScope, $location, sessionService, locationService, $window, appService, $sce, $bahmniCookieStore) {
             $scope.extensions = appService.getAppDescriptor().getExtensions("org.bahmni.registration.navigation", "link");
             var checkCurrentPath = function () {
-            var path = $location.path();
-            $scope.hasPrint = !(path === "/search" || path === "/patient/new");
-            $scope.isSearchPage = (path === "/search" || path === "" || path === "/");
+                var path = $location.path();
+                $scope.hasPrint = !(path === "/search" || path === "/patient/new");
+                $scope.isSearchPage = (path === "/search" || path === "" || path === "/");
             };
             checkCurrentPath();
             $scope.$on('$locationChangeSuccess', function () {
@@ -24,7 +24,7 @@ angular.module('bahmni.registration')
                     cookie = $bahmniCookieStore.get('BAHMNI_USER_LOCATION');
                 }
 
-                if (typeof cookie === 'string') {
+                if (angular.isString(cookie)) {
                     try {
                         return JSON.parse(cookie);
                     } catch (e) {
@@ -39,8 +39,7 @@ angular.module('bahmni.registration')
                 var activeCookie = getActiveCookieLocation();
                 if (activeCookie) {
                     $scope.selectedLocation = $scope.locations.find(function (loc) {
-                        return (activeCookie.uuid && loc.uuid === activeCookie.uuid) || 
-                               (activeCookie.name && (loc.name === activeCookie.name || loc.display === activeCookie.name));
+                        return (activeCookie.uuid && loc.uuid === activeCookie.uuid) || (activeCookie.name && (loc.name === activeCookie.name || loc.display === activeCookie.name));
                     });
                 }
                 if (!$scope.selectedLocation) {
