@@ -131,7 +131,6 @@ angular.module('bahmni.registration')
                     errorMessages.push(relationshipError);
                 }
 
-
                 if (errorMessages.length > 0) {
                     errorMessages.forEach(function (errorMessage) {
                         messagingService.showMessage('error', errorMessage);
