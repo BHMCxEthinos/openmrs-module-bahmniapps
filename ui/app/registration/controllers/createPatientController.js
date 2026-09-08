@@ -272,8 +272,7 @@ angular.module('bahmni.registration')
                 });
 
                 var hasPendingNewRelationships = _.some($scope.patient.newlyAddedRelationships, function (rel) {
-                    return rel && rel.relationshipType && (rel.relationshipType.uuid || rel.relationshipType.aIsToB) && 
-                           (rel.targetPatient || rel.personB || rel.patientIdentifier || rel.providerName || rel.aIsToB);
+                    return rel && rel.relationshipType && (rel.relationshipType.uuid || rel.relationshipType.aIsToB) && (rel.targetPatient || rel.personB || rel.patientIdentifier || rel.providerName || rel.aIsToB);
                 });
 
                 addNewRelationships();

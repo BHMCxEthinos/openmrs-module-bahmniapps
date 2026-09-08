@@ -92,8 +92,7 @@ angular.module('bahmni.registration')
 
                     // Check newly added relationships in UI form rows
                     var newlyAdded = _.filter($scope.patient.newlyAddedRelationships || [], function (rel) {
-                        return rel.relationshipType && (rel.relationshipType.uuid || rel.relationshipType.aIsToB) && 
-                               (rel.personB || rel.targetPatient || rel.patientIdentifier || rel.providerName || rel.aIsToB);
+                        return rel.relationshipType && (rel.relationshipType.uuid || rel.relationshipType.aIsToB) && (rel.personB || rel.targetPatient || rel.patientIdentifier || rel.providerName || rel.aIsToB);
                     });
 
                     // Check relationship attribute field if used
