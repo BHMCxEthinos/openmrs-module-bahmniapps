@@ -141,10 +141,11 @@ angular.module('bahmni.registration')
             };
 
             var showSearchResults = function (searchPromise) {
-                $scope.noMoreResultsPresent = false;
+                $scope.noMoreResultsPresent = true;
                 if (searchPromise) {
                     searchPromise.then(function (data) {
-                        $scope.results = data.pageOfResults;
+                        var results = data.pageOfResults || [];
+                        $scope.results = results.reverse().slice(0, 10);
                         $scope.noResultsMessage = $scope.results.length === 0 ? 'REGISTRATION_NO_RESULTS_FOUND' : null;
                     });
                 }
@@ -384,7 +385,7 @@ angular.module('bahmni.registration')
                             var forwardUrl = appService.getAppDescriptor().getConfigValue("searchByIdForwardUrl") || "/patient/{{patientUuid}}";
                             $location.url(appService.getAppDescriptor().formatUrl(forwardUrl, {'patientUuid': patient.uuid}));
                         } else if (data.pageOfResults.length > 1) {
-                            $scope.results = data.pageOfResults;
+                            $scope.results = results.reverse().slice(0, 10);
                             $scope.noResultsMessage = null;
                         } else {
                             $scope.patientIdentifier = {'patientIdentifier': patientIdentifier};
@@ -450,7 +451,8 @@ angular.module('bahmni.registration')
             };
 
             $scope.nextPage = function () {
-                if ($scope.nextPageLoading) {
+                if ($scope.nextPageLoading || $scope.results.length >= 10) {
+                    $scope.noMoreResultsPresent = true;
                     return;
                 }
                 $scope.nextPageLoading = true;
@@ -458,9 +460,11 @@ angular.module('bahmni.registration')
                 if (promise) {
                     promise.then(function (data) {
                         angular.forEach(data.pageOfResults, function (result) {
-                            $scope.results.push(result);
+                             if ($scope.results.length < 10) {
+                                $scope.results.push(result);
+                            }
                         });
-                        $scope.noMoreResultsPresent = (data.pageOfResults.length === 0);
+                        $scope.noMoreResultsPresent = true;
                         $scope.nextPageLoading = false;
                     }, function () {
                         $scope.nextPageLoading = false;
