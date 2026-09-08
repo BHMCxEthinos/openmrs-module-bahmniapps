@@ -460,7 +460,7 @@ angular.module('bahmni.registration')
                 if (promise) {
                     promise.then(function (data) {
                         angular.forEach(data.pageOfResults, function (result) {
-                             if ($scope.results.length < 10) {
+                            if ($scope.results.length < 10) {
                                 $scope.results.push(result);
                             }
                         });
