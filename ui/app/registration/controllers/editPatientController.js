@@ -35,7 +35,7 @@ angular.module('bahmni.registration')
                     const hideOrDisableAttr = $scope.relatedIdentifierAttribute.hideOrDisable;
                     const hideAttrOnValue = $scope.relatedIdentifierAttribute.hideOnValue;
                     $scope.showRelatedIdentifierOption = !(hideOrDisableAttr === "hide" && $scope.patient[$scope.relatedIdentifierAttribute.name] &&
-                                            $scope.patient[$scope.relatedIdentifierAttribute.name].toString() === hideAttrOnValue);
+                                                            $scope.patient[$scope.relatedIdentifierAttribute.name].toString() === hideAttrOnValue);
                     $scope.showDisabledAttrOption = hideOrDisableAttr === "disable" ? true : false;
                 }
             };
@@ -85,17 +85,24 @@ angular.module('bahmni.registration')
                 var isDependant = patientTypeValue.toLowerCase().trim() === "dependant" || patientTypeValue.toLowerCase().trim() === "dependent";
 
                 if (isDependant) {
-                    // Check active existing relationships (not voided)
+                    // Check existing active saved relationships mapped on patient object
                     var existingRelationships = _.filter($scope.patient.relationships || [], function (rel) {
                         return !rel.voided;
                     });
 
-                    // Check newly added relationships
+                    // Check newly added relationships in UI form rows
                     var newlyAdded = _.filter($scope.patient.newlyAddedRelationships || [], function (rel) {
-                        return rel.relationshipType && rel.relationshipType.uuid && (rel.personB || rel.patientIdentifier || rel.providerName);
+                        return rel.relationshipType && (rel.relationshipType.uuid || rel.relationshipType.aIsToB) && 
+                               (rel.personB || rel.targetPatient || rel.patientIdentifier || rel.providerName || rel.aIsToB);
                     });
 
-                    if (existingRelationships.length === 0 && newlyAdded.length === 0) {
+                    // Check relationship attribute field if used
+                    var relationshipAttr = $scope.patient["Relationship"] || $scope.patient["relationship"];
+                    var hasRelationshipAttr = relationshipAttr && (
+                        typeof relationshipAttr === 'object' ? (relationshipAttr.value || relationshipAttr.display) : relationshipAttr.trim().length > 0
+                    );
+
+                    if (existingRelationships.length === 0 && newlyAdded.length === 0 && !hasRelationshipAttr) {
                         return "Relationship is mandatory when Patient Type is set to Dependant.";
                     }
                 }
@@ -103,13 +110,33 @@ angular.module('bahmni.registration')
                 return "";
             };
 
-            $scope.update = function () {
-                addNewRelationships();
+            var addNewRelationships = function () {
+                var newRelationships = _.filter($scope.patient.newlyAddedRelationships, function (relationship) {
+                    return relationship.relationshipType && (relationship.relationshipType.uuid || relationship.relationshipType.aIsToB);
+                });
 
+                newRelationships = _.map(newRelationships, function (relationship) {
+                    var cleanRel = angular.copy(relationship);
+                    delete cleanRel.patientIdentifier;
+                    delete cleanRel.content;
+                    delete cleanRel.providerName;
+                    return cleanRel;
+                });
+
+                // Preserve existing saved relationships and merge newly added/deleted ones
+                var existing = _.filter($scope.patient.relationships || [], function (rel) {
+                    return rel.uuid; // Keep already persisted OpenMRS relationships
+                });
+
+                var deleted = $scope.patient.deletedRelationships || [];
+                $scope.patient.relationships = _.concat(existing, newRelationships, deleted);
+            };
+
+            $scope.update = function () {
                 var errorMessages = Bahmni.Common.Util.ValidationUtil.validate(
                     $scope.patient,
-                    $scope.patientConfiguration.attributeTypes
-                );
+                    $scope.patientConfiguration ? $scope.patientConfiguration.attributeTypes : []
+                ) || [];
 
                 var patientType = $scope.patient["Patient Type"];
                 var joiningDate = $scope.patient["Joining Date"];
@@ -135,8 +162,10 @@ angular.module('bahmni.registration')
                     errorMessages.forEach(function (errorMessage) {
                         messagingService.showMessage('error', errorMessage);
                     });
-                    return $q.when({});
+                    return $q.when({}); // Unlocks UI spinner safely
                 }
+
+                addNewRelationships();
 
                 return spinner.forPromise(
                     patientService.update($scope.patient, $scope.openMRSPatient).then(function (result) {
@@ -147,18 +176,6 @@ angular.module('bahmni.registration')
                         }
                     })
                 );
-            };
-
-            var addNewRelationships = function () {
-                var newRelationships = _.filter($scope.patient.newlyAddedRelationships, function (relationship) {
-                    return relationship.relationshipType && relationship.relationshipType.uuid;
-                });
-                newRelationships = _.each(newRelationships, function (relationship) {
-                    delete relationship.patientIdentifier;
-                    delete relationship.content;
-                    delete relationship.providerName;
-                });
-                $scope.patient.relationships = _.concat(newRelationships, $scope.patient.deletedRelationships);
             };
 
             $scope.isReadOnly = function (field) {
@@ -178,4 +195,3 @@ angular.module('bahmni.registration')
                 messagingService.showMessage("info", "REGISTRATION_LABEL_SAVED");
             };
         }]);
-

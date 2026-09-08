@@ -23,10 +23,12 @@ angular.module('bahmni.registration')
             var getPersonAttributeTypes = function () {
                 return $rootScope.patientConfiguration.attributeTypes;
             };
+
             $scope.getTranslatedPatientIdentifier = function (patientIdentifier) {
                 var translatedName = Bahmni.Common.Util.TranslationUtil.translateAttribute(patientIdentifier, Bahmni.Common.Constants.registration, $translate);
                 return translatedName;
             };
+
             var prepopulateDefaultsInFields = function () {
                 var personAttributeTypes = getPersonAttributeTypes();
                 var patientInformation = appService.getAppDescriptor().getConfigValue("patientInformation");
@@ -109,7 +111,6 @@ angular.module('bahmni.registration')
                 $scope.patientLoaded = true;
                 $scope.createPatient = true;
 
-                // IPLit: initially selecting patient id source === logged in location IdentifierSourceName, location id prefix
                 if ($rootScope.loggedInLocation && $rootScope.loggedInLocation.attributes) {
                     var foundSourceAttr = $rootScope.loggedInLocation.attributes.find(attr => attr.display.includes('IdentifierSourceName'));
                     if (foundSourceAttr) {
@@ -143,15 +144,23 @@ angular.module('bahmni.registration')
             prepopulateFields();
 
             var addNewRelationships = function () {
-                var newRelationships = _.filter($scope.patient.newlyAddedRelationships, function (relationship) {
-                    return relationship.relationshipType && relationship.relationshipType.uuid;
+                var validNewRelationships = _.filter($scope.patient.newlyAddedRelationships, function (relationship) {
+                    return relationship.relationshipType && (relationship.relationshipType.uuid || relationship.relationshipType.aIsToB);
                 });
-                newRelationships = _.each(newRelationships, function (relationship) {
-                    delete relationship.patientIdentifier;
-                    delete relationship.content;
-                    delete relationship.providerName;
+
+                validNewRelationships = _.map(validNewRelationships, function (relationship) {
+                    var cleanRel = angular.copy(relationship);
+                    delete cleanRel.patientIdentifier;
+                    delete cleanRel.content;
+                    delete cleanRel.providerName;
+                    return cleanRel;
                 });
-                $scope.patient.relationships = newRelationships;
+
+                var existingRelationships = _.filter($scope.patient.relationships || [], function (rel) {
+                    return rel.uuid || rel.relationshipType || rel.personA || rel.personB;
+                });
+
+                $scope.patient.relationships = existingRelationships.concat(validNewRelationships);
             };
 
             var getConfirmationViaNgDialog = function (config) {
@@ -176,6 +185,14 @@ angular.module('bahmni.registration')
                 $scope.patient.name = patientProfileData.patient.person.names[0].display;
                 $scope.patient.isNew = true;
                 $scope.patient.registrationDate = dateUtil.now();
+
+                // Preserve saved relationships returned from OpenMRS
+                if (patientProfileData.relationships && patientProfileData.relationships.length > 0) {
+                    $scope.patient.relationships = patientProfileData.relationships;
+                } else if (patientProfileData.patient.person && patientProfileData.patient.person.relationships) {
+                    $scope.patient.relationships = patientProfileData.patient.person.relationships;
+                }
+
                 $scope.patient.newlyAddedRelationships = [{}];
                 $scope.actions.followUpAction(patientProfileData);
                 patientId = patientProfileData.patient.identifiers[0].identifier;
@@ -249,16 +266,26 @@ angular.module('bahmni.registration')
             };
 
             $scope.create = function () {
+                // Check if patient already has saved relationships or pending input rows
+                var hasExistingRelationships = _.some($scope.patient.relationships || [], function (rel) {
+                    return (rel.uuid || rel.relationshipType || rel.personA || rel.personB) && rel.voided !== true;
+                });
+
+                var hasPendingNewRelationships = _.some($scope.patient.newlyAddedRelationships, function (rel) {
+                    return rel && rel.relationshipType && (rel.relationshipType.uuid || rel.relationshipType.aIsToB) && 
+                           (rel.targetPatient || rel.personB || rel.patientIdentifier || rel.providerName || rel.aIsToB);
+                });
+
                 addNewRelationships();
 
                 var errorMessages = Bahmni.Common.Util.ValidationUtil.validate(
                     $scope.patient,
                     $scope.patientConfiguration.attributeTypes
-                );
+                ) || [];
 
                 var patientType = $scope.patient["Patient Type"];
                 var joiningDate = $scope.patient["Joining Date"];
-                var relationshipAttr = $scope.patient["Relationship"];
+                var relationshipAttr = $scope.patient["Relationship"] || $scope.patient["relationship"];
 
                 if (patientType && patientType.value) {
                     patientType = patientType.value;
@@ -266,19 +293,22 @@ angular.module('bahmni.registration')
                 if (patientType && patientType.display) {
                     patientType = patientType.display;
                 }
+
                 // Rule 1: Mandatory Joining Date for Self
                 if (patientType === "Self" && !joiningDate) {
                     errorMessages.push("Joining Date is mandatory for Self patient type.");
                 }
-                                // Rule 2: Mandatory Relationship for Dependant
+
+                // Rule 2: Mandatory Relationship for Dependant
                 if (patientType === "Dependant" || patientType === "Dependent") {
                     var hasAttributeValue = relationshipAttr && (
-                        (typeof relationshipAttr === 'object' ? (relationshipAttr.value || relationshipAttr.display) : relationshipAttr)
+                        (typeof relationshipAttr === 'object' ? (relationshipAttr.value || relationshipAttr.display) : relationshipAttr.toString().trim().length > 0)
                     );
-                    var hasAddedRelationship = $scope.patient.relationships && $scope.patient.relationships.length > 0;
 
-                    if (!hasAttributeValue && !hasAddedRelationship) {
-                        errorMessages.push("Relationship is mandatory for Dependant patient type.");
+                    var hasAnyRelationship = hasAttributeValue || hasExistingRelationships || hasPendingNewRelationships;
+
+                    if (!hasAnyRelationship) {
+                        errorMessages.push("Relationship is mandatory when Patient Type is set to Dependant.");
                     }
                 }
 
@@ -297,6 +327,11 @@ angular.module('bahmni.registration')
                             );
                         });
 
+                        return $q.reject(errorMessages);
+                    }
+
+                    // If patient was already created on 'Save', update/trigger followUpAction directly
+                    if ($scope.patient.uuid) {
                         return $q.when({});
                     }
 
