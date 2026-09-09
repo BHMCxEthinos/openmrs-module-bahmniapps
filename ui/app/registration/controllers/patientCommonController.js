@@ -42,7 +42,7 @@ angular.module('bahmni.registration')
                 var cookieName = Bahmni.Common.Constants.locationCookieName || 'bahmni.user.location';
                 var cookie = $bahmniCookieStore.get(cookieName) || $bahmniCookieStore.get('BAHMNI_USER_LOCATION');
                 if (cookie) {
-                    if (typeof cookie === 'string') {
+                    if (angular.isString(cookie)) {
                         try { return JSON.parse(cookie).uuid; } catch (e) { return null; }
                     }
                     return cookie.uuid;

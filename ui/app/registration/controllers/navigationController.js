@@ -25,7 +25,7 @@ angular.module('bahmni.registration')
 
             var getActiveCookieLocation = function () {
                 var cookie = $bahmniCookieStore.get(cookieName) || $bahmniCookieStore.get('BAHMNI_USER_LOCATION');
-                if (typeof cookie === 'string') {
+                if (angular.isString(cookie))  {
                     try {
                         return JSON.parse(cookie);
                     } catch (e) {
@@ -82,8 +82,7 @@ angular.module('bahmni.registration')
 
                     if (activeCookie) {
                         $scope.selectedLocation = $scope.locations.find(function (loc) {
-                            return (activeCookie.uuid && loc.uuid === activeCookie.uuid) || 
-                                   (activeCookie.name && (loc.name === activeCookie.name || loc.display === activeCookie.name));
+                            return (activeCookie.uuid && loc.uuid === activeCookie.uuid) || (activeCookie.name && (loc.name === activeCookie.name || loc.display === activeCookie.name));
                         });
                     }
 
@@ -120,4 +119,5 @@ angular.module('bahmni.registration')
 
             $scope.sync = function () {};
         }]);
+
         
