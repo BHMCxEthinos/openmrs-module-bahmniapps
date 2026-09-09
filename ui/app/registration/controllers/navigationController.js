@@ -25,7 +25,7 @@ angular.module('bahmni.registration')
 
             var getActiveCookieLocation = function () {
                 var cookie = $bahmniCookieStore.get(cookieName) || $bahmniCookieStore.get('BAHMNI_USER_LOCATION');
-                if (angular.isString(cookie))  {
+                if (angular.isString(cookie)) {
                     try {
                         return JSON.parse(cookie);
                     } catch (e) {
@@ -119,5 +119,4 @@ angular.module('bahmni.registration')
 
             $scope.sync = function () {};
         }]);
-
-        
+//Login location should be show on search page
