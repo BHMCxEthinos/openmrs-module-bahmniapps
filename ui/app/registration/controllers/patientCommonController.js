@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('bahmni.registration')
-    .controller('PatientCommonController', ['$scope', '$rootScope', '$http', 'patientAttributeService', 'appService', 'patientService', 'spinner', '$location', 'ngDialog', '$window', '$state', '$document', '$translate',
-        function ($scope, $rootScope, $http, patientAttributeService, appService, patientService, spinner, $location, ngDialog, $window, $state, $document, $translate) {
+    .controller('PatientCommonController', ['$scope', '$rootScope', '$http', 'patientAttributeService', 'appService', 'patientService', 'spinner', '$location', 'ngDialog', '$window', '$state', '$document', '$translate', '$bahmniCookieStore',
+        function ($scope, $rootScope, $http, patientAttributeService, appService, patientService, spinner, $location, ngDialog, $window, $state, $document, $translate, $bahmniCookieStore) {
             var autoCompleteFields = appService.getAppDescriptor().getConfigValue("autoCompleteFields", []);
             var showCasteSameAsLastNameCheckbox = appService.getAppDescriptor().getConfigValue("showCasteSameAsLastNameCheckbox");
             var personAttributes = [];
@@ -34,13 +34,32 @@ angular.module('bahmni.registration')
                 return readOnlyFields.indexOf(field) !== -1;
             };
 
-            $http.get('/openmrs/ws/rest/v1/session', {
-                withCredentials: true
-            }).then(function (sessionResponse) {
-                var locationUuid = sessionResponse.data &&
-                                sessionResponse.data.sessionLocation
-                                ? sessionResponse.data.sessionLocation.uuid
-                                : null;
+            // READ LOGIN LOCATION (Prioritize active cookie & rootScope over session)
+            var getActiveLocationUuid = function () {
+                if ($rootScope.location && $rootScope.location.uuid) {
+                    return $rootScope.location.uuid;
+                }
+                var cookieName = Bahmni.Common.Constants.locationCookieName || 'bahmni.user.location';
+                var cookie = $bahmniCookieStore.get(cookieName) || $bahmniCookieStore.get('BAHMNI_USER_LOCATION');
+                if (cookie) {
+                    if (typeof cookie === 'string') {
+                        try { return JSON.parse(cookie).uuid; } catch (e) { return null; }
+                    }
+                    return cookie.uuid;
+                }
+                return null;
+            };
+
+            var activeLocationUuid = getActiveLocationUuid();
+
+            var fetchLocationPromise = activeLocationUuid
+                ? Promise.resolve(activeLocationUuid)
+                : $http.get('/openmrs/ws/rest/v1/session', { withCredentials: true }).then(function (sessionResponse) {
+                    return sessionResponse.data && sessionResponse.data.sessionLocation
+                        ? sessionResponse.data.sessionLocation.uuid
+                        : null;
+                });
+            fetchLocationPromise.then(function (locationUuid) {
                 if (!locationUuid) return null;
                 return $http.get('/openmrs/ws/rest/v1/location/' + locationUuid + '?v=full', {
                     withCredentials: true
@@ -472,4 +491,3 @@ angular.module('bahmni.registration')
                 return ($scope.patient.causeOfDeath || $scope.patient.deathDate) && $scope.patient.dead;
             };
         }]);
-

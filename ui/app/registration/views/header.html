@@ -9,8 +9,7 @@
         <div class="reg-header-right">
             <div ui-view="headerExtension" class="print-action-items"></div>
             <form class="change-location" ng-if="isSearchPage" style="margin: 0; margin-right: 12px;">
-                <select ng-model="selectedLocation"
-                    ng-options="location as (location.display || location.name) for location in locations track by location.uuid"
+                <select ng-model="selectedLocation" ng-options="location as (location.display || location.name) for location in locations track by location.uuid"
                     ng-change="onLocationChange(selectedLocation)"
                     style="background-color: #00695c; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 4px; padding: 4px 10px; cursor: pointer; height: 32px; outline: none;">
                 </select>
