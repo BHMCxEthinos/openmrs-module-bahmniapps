@@ -119,4 +119,4 @@ angular.module('bahmni.registration')
 
             $scope.sync = function () {};
         }]);
-//Login location should be show on search page
+// Login location should be show on search page
