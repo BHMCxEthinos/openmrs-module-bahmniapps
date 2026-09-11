@@ -14,6 +14,13 @@
                        ? 'Type First 3 letters to search'
                        : ''
                    }}"
+                   title="{{
+                       (addressLevel.name == 'District') 
+                       ? 'Type first 3 letters of full district name, e.g., Rai for Raigad' 
+                       : (addressLevel.name == 'State') 
+                       ? 'Type first 3 letters of full state name, e.g., Mah for Maharashtra' 
+                       : ''
+                   }}"
                    pattern-validate
                    non-blank="::addressLevel.required"
                    ng-model="address[addressLevel.addressField]"
