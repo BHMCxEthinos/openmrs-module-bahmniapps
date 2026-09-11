@@ -263,12 +263,31 @@ angular.module('bahmni.clinical')
             };
 
             $scope.checkInvalidDiagnoses = function () {
-                $scope.errorMessage = "";
-                $scope.consultation.newlyAddedDiagnoses.forEach(function (diagnosis) {
-                    if (isDuplicateWithNewlyAddedDiagnosis(diagnosis) || isDuplicateWithSavedDiagnosis(diagnosis)) {
-                        $scope.errorMessage = "{{'CLINICAL_DUPLICATE_DIAGNOSIS_ERROR_MESSAGE' | translate }}";
+                var isInvalid = false;
+
+                angular.forEach($scope.consultation.newlyAddedDiagnoses, function (diagnosis) {
+                    if (diagnosis.codedAnswer && diagnosis.codedAnswer.name) {
+                        var isOtherDiagnosis = diagnosis.codedAnswer.name.toLowerCase().indexOf('other diagnosis') !== -1;
+
+                        if (isOtherDiagnosis && (!diagnosis.comments || diagnosis.comments.trim() === "")) {
+                            isInvalid = true;
+                            diagnosis.isValid = false;
+                        } else {
+                            diagnosis.isValid = true;
+                        }
                     }
                 });
+
+                return isInvalid;
+            };
+
+            // Intercept save action
+            $scope.save = function () {
+                if ($scope.checkInvalidDiagnoses()) {
+                    messagingService.showMessage('error', 'Please fill in the text box for "Other diagnosis" before saving.');
+                    return;
+                }
+                // Proceed with save logic if valid...
             };
 
             var isDuplicateWithNewlyAddedDiagnosis = function (diagnosis) {
@@ -294,6 +313,7 @@ angular.module('bahmni.clinical')
             };
 
             var contextChange = function () {
+                var hasInvalidOtherDiagnosis = $scope.checkInvalidDiagnoses();
                 var invalidnewlyAddedDiagnoses = $scope.consultation.newlyAddedDiagnoses.filter(function (diagnosis) {
                     return isDuplicateWithNewlyAddedDiagnosis(diagnosis) || !$scope.isValid(diagnosis) || isDuplicateWithSavedDiagnosis(diagnosis);
                 });
@@ -305,9 +325,8 @@ angular.module('bahmni.clinical')
                 });
                 var isValidConditionForm = ($scope.consultation.condition.isEmpty() || $scope.consultation.condition.isValid());
                 return {
-                    allow: invalidnewlyAddedDiagnoses.length === 0 && invalidPastDiagnoses.length === 0 &&
-                    invalidSavedDiagnosesFromCurrentEncounter.length === 0 && isValidConditionForm,
-                    errorMessage: $scope.errorMessage
+                    allow: !hasInvalidOtherDiagnosis && invalidnewlyAddedDiagnoses.length === 0 && invalidPastDiagnoses.length === 0 && invalidSavedDiagnosesFromCurrentEncounter.length === 0 && isValidConditionForm,
+                    errorMessage: hasInvalidOtherDiagnosis ? 'Please fill in the text box for "Other diagnosis" before saving.' : $scope.errorMessage
                 };
             };
             contextChangeHandler.add(contextChange);

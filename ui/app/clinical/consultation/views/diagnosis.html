@@ -20,15 +20,15 @@
                                     <input ng-model="diagnosis.codedAnswer.name" type="text" name="name"
                                         id="name-{{$index}}" bahmni-autocomplete source="getDiagnosis"
                                         response-map="cleanOutDiagnosisList"
-                                        on-select="getAddNewDiagnosisMethod(diagnosis)" ng-class="{
+                                        on-select="getAddNewDiagnosisMethod(diagnosis); (diagnosis.codedAnswer.name && diagnosis.codedAnswer.name.toLowerCase().indexOf('other diagnosis') !== -1) && (diagnosis.showComments = true)" ng-class="{
                                                 illegalValue: (diagnosis.codedAnswer.name && !diagnosis.codedAnswer.uuid &&
                                                     !diagnosis.isNonCodedAnswer && allowOnlyCodedDiagnosis) || diagnosis.duplicate,
                                                 active: diagnosis.isNonCodedAnswer
                                         }"
-                                        ng-change="restEmptyRowsToOne($index); diagnosis.clearCodedAnswerUuid(); checkInvalidDiagnoses()">
+                                        ng-change="restEmptyRowsToOne($index); diagnosis.clearCodedAnswerUuid(); diagnosis.isNonCodedAnswer = !diagnosis.codedAnswer.uuid; checkInvalidDiagnoses(); (diagnosis.codedAnswer.name && diagnosis.codedAnswer.name.toLowerCase().indexOf('other diagnosis') !== -1) ? (diagnosis.showComments = true) : null">
 
-                                    <span ng-if="!allowOnlyCodedDiagnosis">
-                                        <button type="button" ng-model="diagnosis.isNonCodedAnswer"
+                                    <span ng-if="false">
+                                        <button type="button" ng-motherodel="diagnosis.isNonCodedAnswer"
                                             class="small-btn accept-btn" id="accept-button-{{$index}}"
                                             ng-click="diagnosis.setAsNonCodedAnswer() && restEmptyRowsToOne($index)"
                                             ng-class="{
@@ -48,7 +48,7 @@
                                 </div>
                                 <div class="col-body">
                                     <buttons-radio class="btn-group" model='diagnosis.order' id="order-{{$index}}"
-                                        ng-class="{'illegalValue': !diagnosis.isValidOrder()}" options='orderOptions' />
+                                        ng-class="{'illegalValue': diagnosis.codedAnswer.name && !diagnosis.isValidOrder()}" options='orderOptions' />
                                 </div>
                             </div>
                             <div class="col col3">
@@ -58,7 +58,7 @@
                                 <div class="col-body">
                                     <buttons-radio class="small-btn" model='diagnosis.certainty'
                                         id="certainty-{{$index}}"
-                                        ng-class="{'illegalValue': !diagnosis.isValidCertainty()}"
+                                        ng-class="{'illegalValue': diagnosis.codedAnswer.name && !diagnosis.isValidCertainty()}"
                                         options='certaintyOptions' />
                                 </div>
                             </div>
@@ -94,8 +94,11 @@
                         <div class="row" ng-if="hasActiveAlerts(diagnosis.alerts) && (!diagnosis.diagnosisStatus || diagnosis.diagnosisStatus === 'ACTIVE')" ng-repeat="alert in diagnosis.alerts">
                            <ng-include class="new-diagnosis-alert-row" src="'consultation/views/diagnosisAlertRow.html'" />
                       </div>
-                        <div class="col col-comments" ng-show="diagnosis.showComments">
-                            <textarea class="comment-section" maxlength="255" ng-model="diagnosis.comments">
+                         <!-- COMMENT SECTION VISIBILITY FIX -->
+                        <div class="col col-comments" ng-show="diagnosis.showComments || (diagnosis.codedAnswer.name && diagnosis.codedAnswer.name.toLowerCase().includes('other diagnosis'))">
+                            <textarea class="comment-section" maxlength="255" ng-model="diagnosis.comments"
+                                ng-required="diagnosis.codedAnswer.name && diagnosis.codedAnswer.name.toLowerCase().includes('other diagnosis')"
+                                ng-class="{'illegalValue': diagnosis.codedAnswer.name && diagnosis.codedAnswer.name.toLowerCase().includes('other diagnosis') && !diagnosis.comments}">
                             </textarea>
                         </div>
                     </div>
