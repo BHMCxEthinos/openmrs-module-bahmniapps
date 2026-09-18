@@ -247,7 +247,6 @@ angular.module('opd.documentupload')
                         }, function () {
                             messagingService.showMessage("error");
                             $scope.toggleGallery = true;
-
                         }));
                 } else {
                     messagingService.showMessage(
