@@ -3,7 +3,6 @@
 angular.module('opd.documentupload')
     .directive('fileUpload', [function () {
         var link = function (scope, element) {
-
             element.bind("change", function () {
                 var files = element[0].files;
                 angular.forEach(files, function (file) {

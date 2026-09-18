@@ -207,7 +207,6 @@ angular.module('opd.documentupload')
             };
 
             $scope.onSelect = function (fileData, visit, fileName, fileType, file) {
-
                 var MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
                 console.log("FILE OBJECT:", file);
@@ -245,20 +244,17 @@ angular.module('opd.documentupload')
                             visit.addFile(fileUrl);
 
                             $scope.toggleGallery = true;
-
                         }, function () {
                             messagingService.showMessage("error");
                             $scope.toggleGallery = true;
 
-                        })
-                    );
+                        }));
                 } else {
                     messagingService.showMessage(
                         "error",
                         $translate.instant("FILE_TYPE_NOT_SUPPORTED_MESSAGE")
                     );
                     $scope.toggleGallery = true;
-
                     if (!$scope.$$phase) {
                         $scope.$apply();
                     }
