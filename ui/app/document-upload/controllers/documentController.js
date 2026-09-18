@@ -193,21 +193,72 @@ angular.module('opd.documentupload')
                 });
             };
 
-            $scope.onSelect = function (file, visit, fileName, fileType) {
+            $scope.showNote = function (file, $event) {
+                if ($event) {
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
+                file.noteVisible = true;
+            };
+
+            $scope.isNoteVisible = function (file) {
+                return file.noteVisible === true || !_.isEmpty(file.comment);
+            };
+
+            $scope.onSelect = function (fileData, visit, fileName, fileType, file) {
+
+                var MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
+                console.log("FILE OBJECT:", file);
+                console.log("FILE SIZE:", file ? file.size : undefined);
+                console.log("FILE NAME:", file ? file.name : undefined);
+
+                // Reject files greater than 10 MB
+                if (!file || file.size > MAX_FILE_SIZE) {
+                    messagingService.showMessage(
+                        "error",
+                        "Upload file size restricted to 10 MB"
+                    );
+
+                    return;
+                }
+
                 $scope.toggleGallery = false;
+
                 fileType = visitDocumentService.getFileType(fileType);
+
                 if (fileType !== "not_supported") {
-                    spinner.forPromise(visitDocumentService.saveFile(file, $rootScope.patient.uuid, $rootScope.appConfig.encounterType, fileName, fileType).then(function (response) {
-                        var fileUrl = Bahmni.Common.Constants.documentsPath + '/' + response.data.url;
-                        var savedFile = visit.addFile(fileUrl);
-                        $scope.toggleGallery = true;
-                    }, function () {
-                        messagingService.showMessage("error");
-                        $scope.toggleGallery = true;
-                    }));
+                    spinner.forPromise(
+                        visitDocumentService.saveFile(
+                            fileData,
+                            $rootScope.patient.uuid,
+                            $rootScope.appConfig.encounterType,
+                            fileName,
+                            fileType
+                        ).then(function (response) {
+                            var fileUrl =
+                                Bahmni.Common.Constants.documentsPath +
+                                '/' +
+                                response.data.url;
+
+                            visit.addFile(fileUrl);
+
+                            $scope.toggleGallery = true;
+
+                        }, function () {
+                            messagingService.showMessage("error");
+                            $scope.toggleGallery = true;
+
+                        })
+                    );
                 } else {
-                    messagingService.showMessage("error", $translate.instant("FILE_TYPE_NOT_SUPPORTED_MESSAGE"));
+                    messagingService.showMessage(
+                        "error",
+                        $translate.instant("FILE_TYPE_NOT_SUPPORTED_MESSAGE")
+                    );
                     $scope.toggleGallery = true;
+
                     if (!$scope.$$phase) {
                         $scope.$apply();
                     }
@@ -316,10 +367,28 @@ angular.module('opd.documentupload')
             };
 
             var updateVisit = function (visit, encounters) {
+                var noteVisibility = {};
+                visit.files.forEach(function (file) {
+                    if (file.obsUuid) {
+                        noteVisibility[file.obsUuid] = file.noteVisible;
+                    }
+                });
+
                 var visitEncounters = encounters.filter(function (encounter) {
                     return visit.uuid === encounter.visit.uuid;
                 });
+
                 visit.initSavedFiles(visitEncounters);
+                console.log("BEFORE initSavedFiles:", visit.files);
+                visit.initSavedFiles(visitEncounters);
+                console.log("AFTER initSavedFiles:", visit.files);
+
+                visit.files.forEach(function (file) {
+                    if (file.obsUuid && noteVisibility[file.obsUuid]) {
+                        file.noteVisible = true;
+                    }
+                });
+
                 visit.changed = false;
                 $scope.currentVisit = visit;
                 sortVisits();

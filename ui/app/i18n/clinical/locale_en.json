@@ -392,5 +392,6 @@
   "CDSS_ACTION": "Please go to Medications Tab to take further action",
   "MEDICATION_PRINT": "Print",
   "DAYS_ADMITTED_MESSAGE": "Days in hospital",
-  "MODULE_LABEL_NDHMHIU_KEY": "ABDM HIU"
+  "MODULE_LABEL_NDHMHIU_KEY": "ABDM HIU",
+  "MODULE_LABEL_PATINET_DOCUMENT_KEY": "Patient Document"
 }
