@@ -57,6 +57,12 @@ angular.module('bahmni.common.displaycontrol.navigationlinks')
                     "translationKey": "MODULE_LABEL_NDHMHIU_KEY",
                     "url": "/hiuser",
                     "title": "HIU"
+                },
+                {
+                    "name": "patientFiles",
+                    "translationKey": "MODULE_LABEL_PATINET_DOCUMENT_KEY",
+                    "url": "/bahmni/document-upload/?encounterType=Patient%20Document&topLevelConcept=Patient%20Document&defaultOption=active#/patient/{{patientUuid}}/document",
+                    "title": "Patient Document"
                 }
             ];
 
@@ -77,9 +83,24 @@ angular.module('bahmni.common.displaycontrol.navigationlinks')
                 );
             };
 
+            // $scope.getUrl = function (link) {
+            //     var url = getFormattedURL(link);
+            //     window.open(url, link.title);
+            // };
             $scope.getUrl = function (link) {
-                var url = getFormattedURL(link);
-                window.open(url, link.title);
+                if (link.name === 'patientFiles') {
+                    var patientUuid = ($scope.linkParams && $scope.linkParams.patientUuid)
+                        || ($scope.patient && $scope.patient.uuid);
+
+                    if (patientUuid) {
+                        var targetUrl = "/bahmni/document-upload/?encounterType=Patient%20Document"
+                            + "&topLevelConcept=Patient%20Document"
+                            + "&defaultOption=active#/patient/" + patientUuid + "/document";
+                        window.location.href = targetUrl;
+                        return;
+                    }
+                }
+                window.location.href = getFormattedURL(link);
             };
 
             $scope.showUrl = function (link) {
