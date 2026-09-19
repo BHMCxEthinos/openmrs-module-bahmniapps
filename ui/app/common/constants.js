@@ -150,7 +150,7 @@ Bahmni.Common = Bahmni.Common || {};
         dosageFrequencyConceptName: 'Dosage Frequency',
         dosageInstructionConceptName: 'Dosage Instructions',
         stoppedOrderReasonConceptName: 'Stopped Order Reason',
-        consultationNoteConceptName: 'Consultation Note',
+        consultationNoteConceptName: 'Note',
         diagnosisConceptSet: 'Diagnosis Concept Set',
         radiologyOrderType: 'Radiology Order',
         radiologyResultConceptName: "Radiology Result",
