@@ -51,7 +51,6 @@ angular.module('bahmni.registration')
                 $scope.searchParameters.addressFieldValue = searchParameters.addressFieldValue || '';
 
                 var hasUrlParams = Object.keys(searchParameters).length > 0;
-                
                 // Keep input empty on default load, but pass '%' to backend API
                 var searchNameQuery = '';
                 if (!hasUrlParams) {
@@ -120,7 +119,7 @@ angular.module('bahmni.registration')
             };
 
             var mapCustomAttributesSearchResults = function (data) {
-                 if (($scope.personSearchResultsConfig.fields) && data !== "Searching" && data && data.pageOfResults) {
+                if (($scope.personSearchResultsConfig.fields) && data !== "Searching" && data && data.pageOfResults) {
                     _.map(data.pageOfResults, function (result) {
                         result.customAttribute = result.customAttribute && JSON.parse(result.customAttribute);
                     });
@@ -167,7 +166,6 @@ angular.module('bahmni.registration')
                     searchPromise.then(function (data) {
                         var results = (data && data.pageOfResults) ? data.pageOfResults : [];
                         var urlParams = $location.search();
-                        
                         // Check if explicit % search in URL
                         var isExplicitWildcard = urlParams.name === '%';
 
@@ -368,7 +366,7 @@ angular.module('bahmni.registration')
 
             $scope.disableSearchButton = function () {
                 return false;
-            }
+            };
 
             $scope.$watch(function () {
                 return $location.search();
@@ -425,7 +423,7 @@ angular.module('bahmni.registration')
 
             var isUserPrivilegedForSearch = function () {
                 var applicablePrivs = [Bahmni.Common.Constants.viewPatientsPrivilege, Bahmni.Common.Constants.editPatientsPrivilege,
-                Bahmni.Common.Constants.addVisitsPrivilege, Bahmni.Common.Constants.deleteVisitsPrivilege];
+                    Bahmni.Common.Constants.addVisitsPrivilege, Bahmni.Common.Constants.deleteVisitsPrivilege];
                 var userPrivs = _.map($rootScope.currentUser.privileges, function (privilege) {
                     return privilege.name;
                 });
