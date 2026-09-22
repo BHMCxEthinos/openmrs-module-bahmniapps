@@ -525,7 +525,6 @@ angular.module('bahmni.registration')
             $scope.extensionActionText = function (extension) {
                 return $filter('titleTranslate')(extension);
             };
-
             $scope.isExtraIdentifierConfigured = function () {
                 return !_.isEmpty($scope.extraIdentifierTypes);
             };
