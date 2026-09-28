@@ -16,6 +16,11 @@
         <button type="button" class="btn-icon" bm-gallery patient="patient" access-impression="true">
             <i class="fa fa-file-text" bm-lazy-image-observation-gallery-items promise="patientDocumentsPromise"></i>
         </button>
+        <button class="dialog-button-group print-btn" ng-show="availableBoards" ng-click="openPrintTab()"
+            style="margin-top: 6px; float: right; margin-right: 5px;">
+            <i class="fa fa-print"></i>
+            <span>Pr</span>
+        </button>
         <button ng-if="visitHistory.activeVisit || retrospectiveEntry || allowConsultation()" ng-click="openScribble()" class="btn-icon start-tele-consultation"><h3>S</h3></button>
         <button type="button" class="consultation-btn" ng-if="(visitHistory.activeVisit || retrospectiveEntry || allowConsultation()) && (stateChange() || visitPage)"
             ng-click="openConsultation()" accesskey="{{'CONSULTATION_SHORTCUT_KEY' | translate}}"

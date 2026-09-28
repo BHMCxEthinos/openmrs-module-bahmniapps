@@ -128,6 +128,29 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                 return buttonClickAction($scope.availableBoards[boardIndex]);
             };
 
+            $scope.openPrintTab = function () {
+                var printTab = _.find(clinicalDashboardConfig.tabs, function (tab) {
+                    return tab.translationKey === 'DASHBOARD_TAB_PRINT';
+                });
+                if (!printTab) {
+                    console.error("Print tab not found in clinicalDashboardConfig.tabs");
+                    return;
+                }
+                if (!isFormValid()) {
+                    $scope.$parent.$parent.$broadcast("event:errorsOnForm");
+                    return;
+                }
+                var params = {
+                    configName: $scope.configName,
+                    patientUuid: $scope.patient.uuid,
+                    encounterUuid: undefined
+                };
+
+                $state.go("patient.dashboard.show", params).then(function () {
+                    $rootScope.$broadcast("event:switchDashboard", printTab);
+                });
+            };
+
             $scope.gotoPatientDashboard = function () {
                 if (!isFormValid()) {
                     $scope.$parent.$parent.$broadcast("event:errorsOnForm");
