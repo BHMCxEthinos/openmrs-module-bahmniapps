@@ -32,13 +32,13 @@
                 <button class="toggle-patient" ng-click="toggleControlPanel()" ng-class="{'shift': showControlPanel, 'hide-ipad': availableBoards }">
                     <i class="fa fa-bars fa-white fa-large"></i>
                 </button>
-                <button class="dialog-button-group start-tele-consultation custom-tooltip" ng-show="availableBoards" ng-click="openPrintTab()"
-                    title="To print the certificates and letter" style="margin-top: 6px; float: right;">
-                    <i class="fa fa-print"></i>
-                </button>
                 <button class="confirm save-consultation" ng-show="availableBoards" single-click="save()" accesskey="{{'SAVE_ACCESS_KEY' | translate}}" ng-class="{'hideSaveText':availableBoards.length > 6}">
                     <i class="fa fa-save"></i>
                     <span class="text" ng-bind-html="'CLINICAL_SAVE_TRANSLATION_KEY'| translate"></span>
+                </button>
+                <button class="dialog-button-group start-tele-consultation custom-tooltip" ng-show="availableBoards" ng-click="openPrintTab()"
+                    title="To print the certificates and letter" style="margin-top: 6px; float: right;">
+                    <i class="fa fa-print"></i>
                 </button>
                 <button ng-show="availableBoards" style="margin-top: 6px; float: right;" ng-click="openScribble()" class="dialog-button-group start-tele-consultation"><h1>S</h1></button>
             </div>
