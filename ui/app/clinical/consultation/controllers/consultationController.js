@@ -109,8 +109,18 @@ angular.module('bahmni.clinical').controller('ConsultationController',
 
             $scope.closeDashboard = function (dashboard) {
                 clinicalDashboardConfig.closeTab(dashboard);
-                $scope.$parent.$parent.$broadcast("event:switchDashboard", clinicalDashboardConfig.currentTab);
-            };
+                if ($rootScope.printOpenedFromConsultation) {
+                    $rootScope.printOpenedFromConsultation = false;
+                    $scope.openConsultation();
+                } else {
+                    var defaultTab = _.find(clinicalDashboardConfig.tabs, function (tab) {
+                        return tab.translationKey !== 'DASHBOARD_TAB_PRINT';
+                    });
+                    if (defaultTab) {
+                        $rootScope.$broadcast("event:switchDashboard", defaultTab);
+                    }
+                }
+           };
 
             $scope.closeAllDialogs = function () {
                 ngDialog.closeAll();
@@ -132,6 +142,12 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                 var printTab = _.find(clinicalDashboardConfig.tabs, function (tab) {
                     return tab.translationKey === 'DASHBOARD_TAB_PRINT';
                 });
+                var defaultTab = _.find(clinicalDashboardConfig.tabs, function (tab) {
+                    return tab !== printTab;
+                });
+                if (defaultTab) {
+                    clinicalDashboardConfig.currentTab = defaultTab;
+                }
                 if (!printTab) {
                     console.error("Print tab not found in clinicalDashboardConfig.tabs");
                     return;
@@ -140,12 +156,13 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                     $scope.$parent.$parent.$broadcast("event:errorsOnForm");
                     return;
                 }
+                // Remember where Print was opened from
+                $rootScope.printOpenedFromConsultation = $rootScope.hasVisitedConsultation;
                 var params = {
                     configName: $scope.configName,
                     patientUuid: $scope.patient.uuid,
                     encounterUuid: undefined
                 };
-
                 $state.go("patient.dashboard.show", params).then(function () {
                     $rootScope.$broadcast("event:switchDashboard", printTab);
                 });
@@ -165,8 +182,16 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                     if ($scope.dashboardDirty) {
                         params['dashboardCachebuster'] = Math.random();
                     }
-                    $state.go("patient.dashboard.show", params);
-                }
+                    $state.go("patient.dashboard.show", params).then(function () {
+                        // Reset Print tab AFTER dashboard navigation
+                        var defaultTab = _.find(clinicalDashboardConfig.tabs, function (tab) {
+                            return tab.translationKey !== 'DASHBOARD_TAB_PRINT';
+                        });
+                        if (defaultTab) {
+                            $rootScope.$broadcast("event:switchDashboard", defaultTab);
+                        }
+                    });
+               }
             };
 
             var isLongerName = function (value) {
