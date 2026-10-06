@@ -76,25 +76,42 @@ angular.module('bahmni.registration')
 
             var initLocation = function () {
                 var activeCookie = getActiveCookieLocation();
-
-                locationService.getAllByTag('Login Location').then(function (response) {
-                    $scope.locations = response.data.results || response.data || [];
-
+                var loginLocations = localStorage.getItem("loginLocations");
+                if (loginLocations) {
+                    $scope.locations = JSON.parse(loginLocations);
                     if (activeCookie) {
                         $scope.selectedLocation = $scope.locations.find(function (loc) {
-                            return (activeCookie.uuid && loc.uuid === activeCookie.uuid) || (activeCookie.name && (loc.name === activeCookie.name || loc.display === activeCookie.name));
+                            return activeCookie.uuid && loc.uuid === activeCookie.uuid;
                         });
                     }
-
                     sessionService.get().then(function (currentUser) {
                         $scope.currentUser = currentUser;
-
                         if (!$scope.selectedLocation && currentUser.currentLocation) {
                             $scope.selectedLocation = $scope.locations.find(function (loc) {
                                 return loc.uuid === currentUser.currentLocation.uuid;
                             });
                         }
-
+                        if (!$scope.selectedLocation && $scope.locations.length > 0) {
+                            $scope.selectedLocation = $scope.locations[0];
+                        }
+                    });
+                    return;
+                }
+                // Fallback if loginLocations is not available
+                locationService.getAllByTag('Login Location').then(function (response) {
+                    $scope.locations = response.data.results || response.data || [];
+                    if (activeCookie) {
+                        $scope.selectedLocation = $scope.locations.find(function (loc) {
+                            return activeCookie.uuid && loc.uuid === activeCookie.uuid;
+                        });
+                    }
+                    sessionService.get().then(function (currentUser) {
+                        $scope.currentUser = currentUser;
+                        if (!$scope.selectedLocation && currentUser.currentLocation) {
+                            $scope.selectedLocation = $scope.locations.find(function (loc) {
+                                return loc.uuid === currentUser.currentLocation.uuid;
+                            });
+                        }
                         if (!$scope.selectedLocation && $scope.locations.length > 0) {
                             $scope.selectedLocation = $scope.locations[0];
                         }
