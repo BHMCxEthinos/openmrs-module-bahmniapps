@@ -43,75 +43,49 @@ angular.module('bahmni.registration')
             });
         };
 
-        var searchByNameOrIdentifier = function (query, limit) {
-            return $http.get(Bahmni.Common.Constants.bahmniCommonsSearchUrl + "/patient/lucene", {
-                method: "GET",
+        var searchByNameOrIdentifier = function (query) {
+            var patientSearchUrl = Bahmni.Common.Constants.bahmniDistroPatientSearchWithCustomerUrl;
+            var config = {
                 params: {
-                    identifier: query,
-                    filterOnAllIdentifiers: true,
                     q: query,
-                    s: "byIdOrName",
-                    limit: limit,
+                    identifier: null,
+                    s: "byIdOrNameOrVillage",
+                    startIndex: 0,
+                    patientAttributes: [
+                        "phoneNumber",
+                        "alternatePhoneNumber",
+                        "Patient Type",
+                        "Employee ID"
+                    ],
+                    patientSearchResultsConfig: [
+                        "phoneNumber",
+                        "alternatePhoneNumber",
+                        "Patient Type",
+                        "Employee ID"
+                    ],
                     loginLocationUuid: sessionService.getLoginLocationUuid()
                 },
                 withCredentials: true
-            }).then(function (response) {
+            };
+            return $http.get(patientSearchUrl, config).then(function (response) {
                 var patients = response.data.pageOfResults || [];
 
-                var requests = patients.map(function (patient) {
-                    return $http.get(
-                        Bahmni.Registration.Constants.basePatientUrl + patient.uuid,
-                        {
-                            method: "GET",
-                            params: {
-                                v: "full"
-                            },
-                            withCredentials: true
+                var selfPatients = patients.filter(function (patient) {
+                    var customAttribute = {};
+                    if (patient.customAttribute) {
+                        try {
+                            customAttribute = angular.fromJson(patient.customAttribute);
+                        } catch (e) {
+                            console.error("Unable to parse customAttribute:", e);
                         }
-                    ).then(function (patientResponse) {
-                        var fullPatient = patientResponse.data;
-
-                        var attributes = [];
-
-                        if (fullPatient.person && fullPatient.person.attributes) {
-                            attributes = fullPatient.person.attributes;
-                        }
-
-                        var employeeIdAttribute = _.find(attributes, function (attribute) {
-                            return attribute.attributeType &&
-                                attribute.attributeType.display === "Employee ID";
-                        });
-
-                        var patientTypeAttribute = _.find(attributes, function (attribute) {
-                            return attribute.attributeType &&
-                                attribute.attributeType.display === "Patient Type";
-                        });
-
-                        patient.employeeId = employeeIdAttribute ?
-                            employeeIdAttribute.value : null;
-
-                        patient.patientType = patientTypeAttribute ?
-                            patientTypeAttribute.value : null;
-
-                        return patient;
-                    }, function () {
-                        patient.employeeId = null;
-                        return patient;
-                    }); });
-
-                return $q.all(requests).then(function (updatedPatients) {
-                    var selfPatients = updatedPatients.filter(function (patient) {
-                        return patient.patientType &&
-                            (
-                                patient.patientType.display === "Self" || patient.patientType === "Self"
-                            );
-                    });
-
-                    response.data.pageOfResults = selfPatients;
-                    response.data.totalCount = selfPatients.length;
-
-                    return response;
+                    }
+                    patient.employeeId = customAttribute["Employee ID"] || null;
+                    patient.patientType = customAttribute["Patient Type"] || null;
+                    return patient.patientType === "Self";
                 });
+                response.data.pageOfResults = selfPatients;
+                response.data.totalCount = selfPatients.length;
+                return response;
             });
         };
 
