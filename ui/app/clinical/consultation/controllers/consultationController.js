@@ -120,7 +120,7 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                         $rootScope.$broadcast("event:switchDashboard", defaultTab);
                     }
                 }
-           };
+            };
 
             $scope.closeAllDialogs = function () {
                 ngDialog.closeAll();
@@ -191,7 +191,7 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                             $rootScope.$broadcast("event:switchDashboard", defaultTab);
                         }
                     });
-               }
+                }
             };
 
             var isLongerName = function (value) {
